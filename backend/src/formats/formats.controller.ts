@@ -9,6 +9,7 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { FormatsService } from './formats.service';
 import staticFormats from '../data/staticFormats';
@@ -107,7 +108,7 @@ export class FormatsController {
       //     after: { pattern, description },
       //   });
       // 204 No Content implies success with no payload.
-      return { status: HttpStatus.NO_CONTENT };
+      return { name, pattern, description };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -120,6 +121,7 @@ export class FormatsController {
   }
 
   @Delete(':name')
+  @HttpCode(204)
   async deleteFormat(@Param('name') name: string) {
     if (!name) {
       throw new HttpException('Invalid format data', HttpStatus.BAD_REQUEST);
@@ -143,7 +145,6 @@ export class FormatsController {
       //     before: dynamicFormats[name],
       //     after: '',
       //   });
-      return { status: HttpStatus.NO_CONTENT };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

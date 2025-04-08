@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 interface FormatData {
   pattern: string;
-  description?: string;
+  description?: string | null;
 }
 
 @Injectable()
@@ -13,11 +13,16 @@ export class FormatsService {
 
   async getFormats(): Promise<{ [name: string]: FormatData }> {
     const formats = await this.prisma.format.findMany();
-    const result = {};
+    const result: { [key: string]: FormatData } = {};
     for (const f of formats) {
       result[f.name] = { pattern: f.pattern, description: f.description };
     }
     return result;
+  }
+
+  async formatExists(name: string): Promise<boolean> {
+    const format = await this.prisma.format.findUnique({ where: { name } });
+    return format !== null;
   }
 
   async addFormat(name: string, data: FormatData): Promise<void> {

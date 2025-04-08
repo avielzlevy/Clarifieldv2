@@ -13,3 +13,10 @@ model Format {
   pattern     String
   description String?
 }
+
+
+model Definition {
+  name        String   @id
+  format      String
+  description String?
+}
