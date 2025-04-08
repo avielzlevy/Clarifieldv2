@@ -1,0 +1,36 @@
+# Top-most EditorConfig file
+root = true
+
+# All files
+[*]
+end_of_line = lf
+charset = utf-8
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown files (preserve trailing whitespace for line breaks)
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML files (commonly used in GitHub Actions, k8s, etc.)
+[*.yml]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# TypeScript & JavaScript
+[*.{js,ts,jsx,tsx}]
+indent_size = 2
+
+# HTML, CSS, SCSS
+[*.{html,css,scss}]
+indent_size = 2
+
+# Python files (if needed)
+[*.py]
+indent_style = space
+indent_size = 4
