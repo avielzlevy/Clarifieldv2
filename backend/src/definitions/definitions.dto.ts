@@ -1,4 +1,4 @@
-// definitions.dto.ts
+// src/definitions/definitions.dto.ts
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class DefinitionNameDto {

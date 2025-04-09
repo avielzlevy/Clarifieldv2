@@ -8,9 +8,11 @@ import {
   Param,
   Body,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { FormatsService } from './formats.service';
 import { FormatNameDto, CreateFormatDto, UpdateFormatDto } from './formats.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('formats')
 export class FormatsController {
@@ -27,8 +29,8 @@ export class FormatsController {
     const formats = await this.formatsService.getFormats();
     return { amount: Object.keys(formats).length };
   }
-
   @Post()
+  @UseGuards(JwtAuthGuard)
   async addFormat(
     @Body() body: CreateFormatDto,
   ): Promise<{ name: string; pattern: string; description?: string } | null> {
@@ -36,8 +38,8 @@ export class FormatsController {
     await this.formatsService.addFormat(name, { pattern, description });
     return { name, pattern };
   }
-
   @Put(':name')
+  @UseGuards(JwtAuthGuard)
   async updateFormat(
     @Param() params: FormatNameDto,
     @Body() body: UpdateFormatDto,
@@ -49,6 +51,7 @@ export class FormatsController {
   }
 
   @Delete(':name')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteFormat(@Param() params: FormatNameDto): Promise<void> {
     const { name } = params;

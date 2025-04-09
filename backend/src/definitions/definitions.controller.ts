@@ -8,6 +8,7 @@ import {
   Param,
   Body,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { DefinitionsService, DefinitionData } from './definitions.service';
 import {
@@ -15,7 +16,7 @@ import {
   CreateDefinitionDto,
   UpdateDefinitionDto,
 } from './definitions.dto';
-// import { addChange } from '../utils/changes';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('definitions')
 export class DefinitionsController {
@@ -41,6 +42,7 @@ export class DefinitionsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async addDefinition(@Body() body: CreateDefinitionDto) {
     const { name, format, description } = body;
     await this.definitionsService.addDefinition(name, {
@@ -51,6 +53,7 @@ export class DefinitionsController {
   }
 
   @Put(':name')
+  @UseGuards(JwtAuthGuard)
   async updateDefinition(
     @Param() params: DefinitionNameDto,
     @Body() body: UpdateDefinitionDto,
@@ -65,6 +68,7 @@ export class DefinitionsController {
   }
 
   @Delete(':name')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteDefinition(@Param() params: DefinitionNameDto) {
     const { name } = params;

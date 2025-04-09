@@ -1,6 +1,7 @@
 // prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
+  output = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -9,14 +10,43 @@ datasource db {
 }
 
 model Format {
-  name        String   @id
+  name        String  @id
   pattern     String
   description String?
 }
 
-
 model Definition {
-  name        String   @id
+  name        String  @id
   format      String
   description String?
+}
+
+model Entity {
+  label  String @id
+  fields Json   @default("[]")
+}
+
+model Analytic {
+  type   String
+  name   String
+  amount Int    @default(0)
+
+  @@id([type, name])
+}
+
+model Report {
+  id          Int    @id @default(autoincrement())
+  type        String
+  name        String
+  status      String @default("pending")
+  description String
+}
+
+model Change {
+  id        Int      @id @default(autoincrement())
+  type      String
+  name      String
+  timestamp DateTime
+  before    Json
+  after     Json
 }

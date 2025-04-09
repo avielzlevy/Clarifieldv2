@@ -19,8 +19,15 @@ export class FormatsService {
   constructor(private readonly prisma: PrismaService) {}
   //Utility methods
   async formatExists(name: string): Promise<boolean> {
-    const format = await this.prisma.format.findUnique({ where: { name } });
-    return format !== null;
+    const dynamicFormats = await this.prisma.format.findUnique({
+      where: { name },
+    });
+    if (
+      dynamicFormats ||
+      Object.prototype.hasOwnProperty.call(staticFormats, name)
+    )
+      return true;
+    return false;
   }
 
   // Service methods

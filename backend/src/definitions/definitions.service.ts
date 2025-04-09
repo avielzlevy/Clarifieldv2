@@ -55,8 +55,10 @@ export class DefinitionsService {
         where: { name },
       });
       if (existing) throw new ConflictException('Definition already exists');
-      if (!(await this.formatsService.formatExists(data.format)))
+      if (!(await this.formatsService.formatExists(data.format))) {
+        console.log(`Format ${data.format} does not exist`);
         throw new NotAcceptableException('Format does not exist');
+      }
       await this.prisma.definition.create({
         data: { name, format: data.format, description: data.description },
       });
