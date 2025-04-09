@@ -11,6 +11,10 @@ import { AnalyticsController } from './analytics/analytics.controller';
 import { AnalyticsService } from './analytics/analytics.service';
 import { ReportsController } from './reports/reports.controller';
 import { ReportsService } from './reports/reports.service';
+import { ChangesController } from './changes/changes.controller';
+import { ChangesService } from './changes/changes.service';
+import { SettingsController } from './settings/settings.controller';
+import { SettingsService } from './settings/settings.service';
 
 @Module({
   imports: [AuthModule],
@@ -20,6 +24,8 @@ import { ReportsService } from './reports/reports.service';
     EntitiesController,
     AnalyticsController,
     ReportsController,
+    ChangesController,
+    SettingsController,
   ],
   providers: [
     PrismaService,
@@ -28,6 +34,8 @@ import { ReportsService } from './reports/reports.service';
     EntitiesService,
     AnalyticsService,
     ReportsService,
+    ChangesService,
+    SettingsService,
   ],
 })
 export class AppModule {}

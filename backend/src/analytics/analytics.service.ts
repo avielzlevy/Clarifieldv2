@@ -2,6 +2,7 @@ import {
   Injectable,
   InternalServerErrorException,
   HttpException,
+  ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -42,5 +43,30 @@ export class AnalyticsService {
       create: { type, name, amount },
       update: { amount: { increment: amount } },
     });
+  }
+
+  async renameAnalytic(
+    type: string,
+    originalName: string,
+    newName: string,
+  ): Promise<void> {
+    try {
+      // Check if an analytic with the new name already exists for the given type.
+      const existing = await this.prisma.analytic.findUnique({
+        where: { type_name: { type, name: newName } },
+      });
+      if (existing) {
+        throw new ConflictException('Analytic with new name already exists');
+      }
+      // Update the analytic record.
+      await this.prisma.analytic.update({
+        where: { type_name: { type, name: originalName } },
+        data: { name: newName },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      console.error('Error renaming analytic:', error);
+      throw new InternalServerErrorException('Failed to rename analytic');
+    }
   }
 }

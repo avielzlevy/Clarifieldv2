@@ -122,4 +122,24 @@ export class DefinitionsService {
       throw new InternalServerErrorException('Failed to delete definition');
     }
   }
+  async renameDefinition(originalName: string, newName: string): Promise<void> {
+    try {
+      // Check if newName already exists.
+      const existing = await this.prisma.definition.findUnique({
+        where: { name: newName },
+      });
+      if (existing) {
+        throw new ConflictException('Definition with new name already exists');
+      }
+      // Update the definition's name.
+      await this.prisma.definition.update({
+        where: { name: originalName },
+        data: { name: newName },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      console.error('Error renaming definition:', error);
+      throw new InternalServerErrorException('Failed to rename definition');
+    }
+  }
 }

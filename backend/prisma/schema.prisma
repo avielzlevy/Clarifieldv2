@@ -1,7 +1,7 @@
 // prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
-  output = "../node_modules/.prisma/client"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -49,4 +49,9 @@ model Change {
   timestamp DateTime
   before    Json
   after     Json
+}
+
+model Setting {
+  id               Int    @id @default(1)
+  namingConvention String
 }

@@ -164,4 +164,25 @@ export class EntitiesService {
       throw new InternalServerErrorException('Failed to delete entity');
     }
   }
+
+  async renameEntity(originalLabel: string, newLabel: string): Promise<void> {
+    try {
+      // Verify that no entity with the new label exists.
+      const existing = await this.prisma.entity.findUnique({
+        where: { label: newLabel },
+      });
+      if (existing) {
+        throw new ConflictException('Entity with new label already exists');
+      }
+      // Update the entity's label.
+      await this.prisma.entity.update({
+        where: { label: originalLabel },
+        data: { label: newLabel },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      console.error('Error renaming entity:', error);
+      throw new InternalServerErrorException('Failed to rename entity');
+    }
+  }
 }
