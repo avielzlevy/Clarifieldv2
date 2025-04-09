@@ -1,5 +1,11 @@
+# .gitattributes
 * text=auto
 *.ts text eol=lf
 *.js text eol=lf
 *.json text eol=lf
 *.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
