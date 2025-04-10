@@ -29,7 +29,7 @@ export class SettingsService {
     let setting = await this.prisma.setting.findUnique({ where: { id: 1 } });
     if (!setting) {
       setting = await this.prisma.setting.create({
-        data: { id: 1, namingConvention: 'snake_case' },
+        data: { namingConvention: 'snake_case' },
       });
     }
     return setting;

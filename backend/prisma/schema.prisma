@@ -52,7 +52,7 @@ model Change {
 }
 
 model Setting {
-  id               Int    @id @default(1)
+  id               Int    @id @default(autoincrement())
   namingConvention String
 }
 
