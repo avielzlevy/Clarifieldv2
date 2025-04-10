@@ -7,7 +7,8 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import staticFormats from '../data/staticFormats';
+import staticFormats from '../definitions/data/staticFormats';
+import { ChangesService } from '../changes/changes.service';
 
 export interface FormatData {
   pattern: string;
@@ -16,7 +17,10 @@ export interface FormatData {
 
 @Injectable()
 export class FormatsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly changesService: ChangesService,
+  ) {}
   //Utility methods
   async formatExists(name: string): Promise<boolean> {
     const dynamicFormats = await this.prisma.format.findUnique({
@@ -50,21 +54,22 @@ export class FormatsService {
   }
 
   async addFormat(name: string, data: FormatData): Promise<void> {
+    const { pattern, description } = data;
     try {
       const existing = await this.prisma.format.findUnique({ where: { name } });
       if (existing) {
         throw new ConflictException('Format already exists');
       }
       await this.prisma.format.create({
-        data: { name, pattern: data.pattern, description: data.description },
+        data: { name, pattern, description },
       });
-      //   await addChange({
-      //     type: 'formats',
-      //     name,
-      //     timestamp: new Date().toISOString(),
-      //     before: '',
-      //     after: { name, pattern, description },
-      //   });
+      await this.changesService.addChange({
+        type: 'formats',
+        name,
+        timestamp: new Date().toISOString(),
+        before: '',
+        after: { name, pattern, description },
+      });
     } catch (error) {
       if (error instanceof ConflictException) throw error;
       console.log('Error adding format:', error);
@@ -73,6 +78,7 @@ export class FormatsService {
   }
 
   async updateFormat(name: string, data: FormatData): Promise<void> {
+    const { pattern, description } = data;
     try {
       const existing = await this.prisma.format.findUnique({ where: { name } });
       if (!existing) {
@@ -83,15 +89,16 @@ export class FormatsService {
       }
       await this.prisma.format.update({
         where: { name },
-        data: { pattern: data.pattern, description: data.description },
+        data: { pattern, description },
       });
-      //   await addChange({
-      //     type: 'formats',
-      //     name,
-      //     timestamp: new Date().toISOString(),
-      //     before: dynamicFormats[name],
-      //     after: { pattern, description },
-      //   });
+
+      await this.changesService.addChange({
+        type: 'formats',
+        name,
+        timestamp: new Date().toISOString(),
+        before: existing,
+        after: { name, pattern, description },
+      });
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       console.log('Error updating format:', error);
@@ -109,13 +116,13 @@ export class FormatsService {
         throw new NotFoundException('Format not found');
       }
       await this.prisma.format.delete({ where: { name } });
-      //   await addChange({
-      //     type: 'formats',
-      //     name,
-      //     timestamp: new Date().toISOString(),
-      //     before: dynamicFormats[name],
-      //     after: '',
-      //   });
+      await this.changesService.addChange({
+        type: 'formats',
+        name,
+        timestamp: new Date().toISOString(),
+        before: existing,
+        after: '',
+      });
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       console.log('Error deleting format:', error);

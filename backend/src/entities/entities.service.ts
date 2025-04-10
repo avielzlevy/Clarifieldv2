@@ -11,12 +11,14 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DefinitionsService } from '../definitions/definitions.service';
 import { EntityData, Field } from './entities.types';
+import { ChangesService } from '../changes/changes.service';
 
 @Injectable()
 export class EntitiesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly definitionsService: DefinitionsService,
+    private readonly changesService: ChangesService,
   ) {}
 
   async getEntities(): Promise<Record<string, EntityData>> {
@@ -93,7 +95,13 @@ export class EntitiesService {
           fields: data.fields as unknown as Prisma.JsonArray,
         },
       });
-      // Optionally, add logging or change tracking here.
+      await this.changesService.addChange({
+        type: 'entities',
+        name: label,
+        timestamp: new Date().toISOString(),
+        before: '',
+        after: { label, fields: data.fields },
+      });
     } catch (error) {
       if (error instanceof HttpException) throw error;
       console.error('Error adding entity:', error);
@@ -141,7 +149,14 @@ export class EntitiesService {
           fields: data.fields as unknown as Prisma.JsonArray,
         },
       });
-      // Optionally, add change logging here.
+      //TODO: show only deltas
+      await this.changesService.addChange({
+        type: 'entities',
+        name: label,
+        timestamp: new Date().toISOString(),
+        before: existing,
+        after: { label: data.label, fields: data.fields },
+      });
     } catch (error) {
       if (error instanceof HttpException) throw error;
       console.error('Error updating entity:', error);
@@ -158,6 +173,13 @@ export class EntitiesService {
 
       await this.prisma.entity.delete({ where: { label } });
       // Optionally: remove references to this entity from other entities if needed.
+      await this.changesService.addChange({
+        type: 'entities',
+        name: label,
+        timestamp: new Date().toISOString(),
+        before: existing,
+        after: '',
+      });
     } catch (error) {
       if (error instanceof HttpException) throw error;
       console.error('Error deleting entity:', error);
@@ -165,24 +187,26 @@ export class EntitiesService {
     }
   }
 
-  async renameEntity(originalLabel: string, newLabel: string): Promise<void> {
+  async updateEntityFields(
+    entityLabel: string,
+    newFields: Field[],
+  ): Promise<void> {
     try {
-      // Verify that no entity with the new label exists.
-      const existing = await this.prisma.entity.findUnique({
-        where: { label: newLabel },
-      });
-      if (existing) {
-        throw new ConflictException('Entity with new label already exists');
-      }
-      // Update the entity's label.
+      // Here, you update the entity record by setting the 'fields' property.
       await this.prisma.entity.update({
-        where: { label: originalLabel },
-        data: { label: newLabel },
+        where: { label: entityLabel },
+        data: { fields: newFields as unknown as Prisma.JsonArray },
+      });
+      await this.changesService.addChange({
+        type: 'entities',
+        name: entityLabel,
+        timestamp: new Date().toISOString(),
+        before: '',
+        after: { label: entityLabel, fields: newFields },
       });
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      console.error('Error renaming entity:', error);
-      throw new InternalServerErrorException('Failed to rename entity');
+      console.error('Error updating entity fields:', error);
+      throw new InternalServerErrorException('Failed to update entity fields');
     }
   }
 }

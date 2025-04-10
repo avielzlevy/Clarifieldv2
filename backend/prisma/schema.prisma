@@ -55,3 +55,13 @@ model Setting {
   id               Int    @id @default(1)
   namingConvention String
 }
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  ip        String
+  method    String
+  path      String
+  status    Int
+  duration  Int
+}

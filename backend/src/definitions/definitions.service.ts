@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { FormatsService } from '../formats/formats.service';
+import { ChangesService } from '../changes/changes.service';
 
 export interface DefinitionData {
   format: string;
@@ -20,6 +21,7 @@ export class DefinitionsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly formatsService: FormatsService,
+    private readonly changesService: ChangesService,
   ) {}
 
   async getDefinitions(): Promise<Record<string, DefinitionData>> {
@@ -50,6 +52,7 @@ export class DefinitionsService {
   }
 
   async addDefinition(name: string, data: DefinitionData): Promise<void> {
+    const { format, description } = data;
     try {
       const existing = await this.prisma.definition.findUnique({
         where: { name },
@@ -60,15 +63,15 @@ export class DefinitionsService {
         throw new NotAcceptableException('Format does not exist');
       }
       await this.prisma.definition.create({
-        data: { name, format: data.format, description: data.description },
+        data: { name, format, description },
       });
-      //   await addChange({
-      //     type: 'definitions',
-      //     name,
-      //     timestamp: new Date().toISOString(),
-      //     before: '',
-      //     after: { name, format, description },
-      //   });
+      await this.changesService.addChange({
+        type: 'definitions',
+        name,
+        timestamp: new Date().toISOString(),
+        before: '',
+        after: { name, format, description },
+      });
     } catch (error) {
       if (error instanceof HttpException) throw error;
       console.log('Error adding definition:', error);
@@ -77,6 +80,7 @@ export class DefinitionsService {
   }
 
   async updateDefinition(name: string, data: DefinitionData): Promise<void> {
+    const { format, description } = data;
     try {
       const existing = await this.prisma.definition.findUnique({
         where: { name },
@@ -86,15 +90,15 @@ export class DefinitionsService {
         throw new NotAcceptableException('Format does not exist');
       await this.prisma.definition.update({
         where: { name },
-        data: { format: data.format, description: data.description },
+        data: { format: format, description },
       });
-      // await addChange({
-      //   type: 'definitions',
-      //   name,
-      //   timestamp: new Date().toISOString(),
-      //   before: existingDefinition,
-      //   after: { name, format, description },
-      // });
+      await this.changesService.addChange({
+        type: 'definitions',
+        name,
+        timestamp: new Date().toISOString(),
+        before: existing,
+        after: { name, format, description },
+      });
     } catch (error) {
       if (error instanceof HttpException) throw error;
       console.log('Error updating definition:', error);
@@ -109,13 +113,13 @@ export class DefinitionsService {
       });
       if (!existing) throw new NotFoundException('Definition not found');
       await this.prisma.definition.delete({ where: { name } });
-      //   await addChange({
-      //     type: 'definitions',
-      //     name,
-      //     timestamp: new Date().toISOString(),
-      //     before: definition,
-      //     after: '',
-      //   });
+      await this.changesService.addChange({
+        type: 'definitions',
+        name,
+        timestamp: new Date().toISOString(),
+        before: existing,
+        after: '',
+      });
     } catch (error) {
       if (error instanceof HttpException) throw error;
       console.log('Error deleting definition:', error);
@@ -135,6 +139,13 @@ export class DefinitionsService {
       await this.prisma.definition.update({
         where: { name: originalName },
         data: { name: newName },
+      });
+      await this.changesService.addChange({
+        type: 'definitions',
+        name: originalName,
+        timestamp: new Date().toISOString(),
+        before: { name: originalName },
+        after: { name: newName },
       });
     } catch (error) {
       if (error instanceof HttpException) throw error;

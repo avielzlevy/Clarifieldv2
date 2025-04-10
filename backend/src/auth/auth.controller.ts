@@ -1,5 +1,5 @@
 // src/auth/auth.controller.ts
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Headers, Get } from '@nestjs/common';
 import { SignInDto, TokenResponseDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -15,9 +15,11 @@ export class AuthController {
     return tokenPayload;
   }
 
-  @Post('verify')
-  @HttpCode(200)
-  async verifyToken(@Body('token') token: string): Promise<{ valid: boolean }> {
+  //verify has to be a GET request and token will be passed in the header Authorization
+  @Get('verify')
+  async verifyToken(
+    @Headers('Authorization') token: string,
+  ): Promise<{ valid: boolean }> {
     // Use your auth service to verify the token
     const isValid = await this.authService.verifyToken(token);
     return { valid: isValid };

@@ -29,7 +29,7 @@ export class SettingsService {
     let setting = await this.prisma.setting.findUnique({ where: { id: 1 } });
     if (!setting) {
       setting = await this.prisma.setting.create({
-        data: { namingConvention: 'snake_case' },
+        data: { id: 1, namingConvention: 'snake_case' },
       });
     }
     return setting;
@@ -94,32 +94,43 @@ export class SettingsService {
         );
       }
     }
+    // Loop through each entity and update its fields only.
+    for (const entityKey of Object.keys(entities)) {
+      // entityKey remains unchanged; only fields are modified.
+      const entity = entities[entityKey];
 
-    // Loop through entities and update their labels.
-    for (const originalLabel of Object.keys(entities)) {
-      let transformedLabel: string;
-      switch (settings.namingConvention) {
-        case 'camelCase':
-          transformedLabel = toCamelCase(originalLabel);
-          break;
-        case 'PascalCase':
-          transformedLabel = toPascalCase(originalLabel);
-          break;
-        case 'kebab-case':
-          transformedLabel = toKebabCase(originalLabel);
-          break;
-        case 'snake_case':
-        default:
-          transformedLabel = toSnakeCase(originalLabel);
-          break;
-      }
-      if (transformedLabel !== originalLabel) {
-        // This helper should update the entity’s label in the DB.
-        await this.entitiesService.renameEntity(
-          originalLabel,
-          transformedLabel,
-        );
-      }
+      // Map the fields array, transforming each field's label.
+      const transformedFields = entity.fields.map((field) => {
+        // Only transform if field.label is a string.
+        if (typeof field.label === 'string') {
+          let newLabel: string;
+          switch (settings.namingConvention) {
+            case 'camelCase':
+              newLabel = toCamelCase(field.label);
+              break;
+            case 'PascalCase':
+              newLabel = toPascalCase(field.label);
+              break;
+            case 'kebab-case':
+              newLabel = toKebabCase(field.label);
+              break;
+            case 'snake_case':
+            default:
+              newLabel = toSnakeCase(field.label);
+              break;
+          }
+          // Return a new field with the updated label.
+          return { ...field, label: newLabel };
+        }
+        return field;
+      });
+
+      // If the transformed fields differ, update the entity's fields.
+      // (Implement updateEntityFields to update only the fields, not the entity label.)
+      await this.entitiesService.updateEntityFields(
+        entityKey,
+        transformedFields,
+      );
     }
 
     // For analytics of type "definition", update the inner keys.
