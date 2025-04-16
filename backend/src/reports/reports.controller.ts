@@ -3,6 +3,7 @@ import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { AddReportDto, UpdateReportDto } from './reports.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+
 @ApiTags('reports')
 @Controller('reports')
 export class ReportsController {
