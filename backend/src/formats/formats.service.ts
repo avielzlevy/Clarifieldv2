@@ -7,7 +7,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import staticFormats from '../definitions/data/staticFormats';
+import staticFormats from '../definitions/staticFormats';
 import { ChangesService } from '../changes/changes.service';
 
 export interface FormatData {
