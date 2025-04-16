@@ -3,8 +3,8 @@ name: Auto Swagger Doc
 on:
   pull_request:
     paths:
-      - 'backend/**/*.controller.ts'
-      - 'backend/**/*.dto.ts'
+      - "backend/**/*.controller.ts"
+      - "backend/**/*.dto.ts"
 
 permissions:
   contents: read
@@ -19,4 +19,6 @@ jobs:
         uses: avielzlevy/nestjs-autodoc@main
         with:
           openai_key: ${{ secrets.OPENAI_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          gh_app_id: ${{ secrets.GH_APP_ID }}
+          gh_app_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
