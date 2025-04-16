@@ -6,6 +6,10 @@ on:
       - 'backend/**/*.controller.ts'
       - 'backend/**/*.dto.ts'
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   doc-enhancer:
     runs-on: ubuntu-latest
