@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ChangesService } from './changes.service';
 import { CreateChangeDto } from './changes.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-
 @Controller('changes')
 export class ChangesController {
   constructor(private readonly changesService: ChangesService) {}
