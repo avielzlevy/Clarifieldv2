@@ -9,7 +9,6 @@ import {
   HttpCode,
   UseGuards,
 } from '@nestjs/common';
-
 import { FormatsService } from './formats.service';
 import { FormatNameDto, CreateFormatDto, UpdateFormatDto } from './formats.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
