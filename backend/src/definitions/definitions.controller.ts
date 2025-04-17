@@ -31,6 +31,7 @@ import {
 
 @Controller('definitions')
 @ApiTags('Definitions')
+@ApiTags('Definitions')
 export class DefinitionsController {
   constructor(private readonly definitionsService: DefinitionsService) {}
 
