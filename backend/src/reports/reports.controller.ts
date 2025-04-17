@@ -9,12 +9,16 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Fetch all report entries grouped by name',
+  })
   @ApiResponse({
     status: 200,
     description: 'Grouped report entries fetched successfully',
     type: Object, // Since the actual type is a nested object, type is Object here
   })
   @ApiResponse({ status: 404, description: 'No report entries found' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   async getReports() {
     return await this.reportsService.getReports();
   }
