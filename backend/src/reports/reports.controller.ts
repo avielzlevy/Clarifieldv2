@@ -3,6 +3,7 @@ import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { AddReportDto, UpdateReportDto } from './reports.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+
 @ApiTags('reports')
 @Controller('reports')
 export class ReportsController {
@@ -18,7 +19,6 @@ export class ReportsController {
     type: Object, // Since the actual type is a nested object, type is Object here
   })
   @ApiResponse({ status: 404, description: 'No report entries found' })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
   async getReports() {
     return await this.reportsService.getReports();
   }
@@ -40,6 +40,11 @@ export class ReportsController {
     },
   })
   @ApiResponse({ status: 400, description: 'Invalid request body' })
+  @ApiParam({
+    name: 'name',
+    description: 'Name/identifier for the report group',
+    example: 'serviceX',
+  })
   async addReport(@Param('name') name: string, @Body() dto: AddReportDto) {
     const { type, description } = dto;
     await this.reportsService.addReport(type, name, description);
