@@ -9,7 +9,6 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all grouped report entries' })
   @ApiResponse({
     status: 200,
     description: 'Grouped report entries fetched successfully',
@@ -21,11 +20,6 @@ export class ReportsController {
   }
 
   @Post(':name')
-  @ApiParam({
-    name: 'name',
-    description: 'Name/identifier for the report group',
-    example: 'serviceX',
-  })
   @ApiOperation({
     summary: 'Add a new report entry with default status "pending"',
   })
@@ -75,7 +69,6 @@ export class ReportsController {
       },
     },
   })
-  @ApiResponse({ status: 404, description: 'Report entry not found' })
   @ApiResponse({ status: 400, description: 'Invalid request body' })
   async updateReport(
     @Param('name') name: string,
