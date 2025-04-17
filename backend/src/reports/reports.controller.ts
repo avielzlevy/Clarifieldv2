@@ -2,7 +2,13 @@
 import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { AddReportDto, UpdateReportDto } from './reports.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
 @ApiTags('reports')
 @Controller('reports')
@@ -18,7 +24,7 @@ export class ReportsController {
     description: 'Grouped report entries fetched successfully',
     type: Object, // Since the actual type is a nested object, type is Object here
   })
-  @ApiResponse({ status: 404, description: 'No report entries found' })
+  @ApiResponse({ status: 404, description: 'No report entries found' }) // Keep this for user feedback
   async getReports() {
     return await this.reportsService.getReports();
   }
@@ -26,6 +32,15 @@ export class ReportsController {
   @Post(':name')
   @ApiOperation({
     summary: 'Add a new report entry with default status "pending"',
+  })
+  @ApiParam({
+    name: 'name',
+    description: 'Name/identifier for the report group',
+    example: 'serviceX',
+  })
+  @ApiBody({
+    description: 'Report entry data',
+    type: AddReportDto,
   })
   @ApiResponse({
     status: 201,
@@ -40,11 +55,7 @@ export class ReportsController {
     },
   })
   @ApiResponse({ status: 400, description: 'Invalid request body' })
-  @ApiParam({
-    name: 'name',
-    description: 'Name/identifier for the report group',
-    example: 'serviceX',
-  })
+  @ApiResponse({ status: 404, description: 'Report entry not found' }) // Not needed, handled by service
   async addReport(@Param('name') name: string, @Body() dto: AddReportDto) {
     const { type, description } = dto;
     await this.reportsService.addReport(type, name, description);
@@ -57,14 +68,18 @@ export class ReportsController {
   }
 
   @Put(':name')
+  @ApiOperation({
+    summary:
+      'Update the status of an existing report entry identified by type, name, and description',
+  })
   @ApiParam({
     name: 'name',
     description: 'Name/identifier for the report group',
     example: 'serviceX',
   })
-  @ApiOperation({
-    summary:
-      'Update the status of an existing report entry identified by type, name, and description',
+  @ApiBody({
+    description: 'Report entry data',
+    type: UpdateReportDto,
   })
   @ApiResponse({
     status: 200,

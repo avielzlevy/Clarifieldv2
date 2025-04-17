@@ -8,5 +8,7 @@
     "Clarifield",
     "notistack",
     "Searchables"
-  ]
+  ],
+    "eslint.validate": ["typescript"],
+    "eslint.enable": true
 }
