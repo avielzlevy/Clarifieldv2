@@ -1,4 +1,4 @@
-//src/reports/reports.controller.ts
+// src/reports/reports.controller.ts
 import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { AddReportDto, UpdateReportDto } from './reports.dto';
@@ -13,7 +13,7 @@ export class ReportsController {
   @ApiResponse({
     status: 200,
     description: 'Grouped report entries fetched successfully',
-    type: Object, // More specifically, nested object ReportGroupedDto
+    type: Object, // Since the actual type is a nested object, type is Object here
   })
   @ApiResponse({ status: 404, description: 'No report entries found' })
   async getReports() {
@@ -21,6 +21,11 @@ export class ReportsController {
   }
 
   @Post(':name')
+  @ApiParam({
+    name: 'name',
+    description: 'Name/identifier for the report group',
+    example: 'serviceX',
+  })
   @ApiOperation({
     summary: 'Add a new report entry with default status "pending"',
   })
@@ -53,6 +58,10 @@ export class ReportsController {
     name: 'name',
     description: 'Name/identifier for the report group',
     example: 'serviceX',
+  })
+  @ApiOperation({
+    summary:
+      'Update the status of an existing report entry identified by type, name, and description',
   })
   @ApiResponse({
     status: 200,

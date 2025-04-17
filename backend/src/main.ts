@@ -18,10 +18,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Clarifield API')
     .setDescription(
-      `
-      Clarifield is a web-based portal designed to help enterprises standardize, manage, and enforce definitions and formats for fields used in APIs, databases, and software projects.
-It serves as a centralized repository that bridges the gap between security/compliance teams, product managers, and developers, ensuring consistency and efficiency across all projects.
-`,
+      `Clarifield is a web-based portal designed to help enterprises standardize, manage, and enforce definitions and formats for fields used in APIs, databases, and software projects.\nIt serves as a centralized repository that bridges the gap between security/compliance teams, product managers, and developers, ensuring consistency and efficiency across all projects.`,
     )
     .setVersion('1.0')
     .addBearerAuth()
