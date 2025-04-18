@@ -1,35 +1,38 @@
-name: Swagger Decorator Lint
+name: Backend ESLint
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]  # ← trigger on commit push
     paths:
-      - 'backend/**/*.ts'                   # ← only if TS files in backend changed
+      - 'backend/**'        # only run when backend code changes
 
 permissions:
-  contents: read
-  pull-requests: write                      # ← allows posting comments
+  contents: read            # required for checkout
+  pull-requests: write      # needed to add review comments
 
 jobs:
-  doc-enhancer:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # ─────────────  Node & deps  ─────────────
+      - name: Use Node 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install backend dependencies
+      - name: Install backend deps
         working-directory: backend
-        run: npm ci
+        run: npm ci --ignore-scripts
 
-      - name: Run Swagger Decorator ESLint (via GitHub App)
-        uses: avielzlevy/nestjs-autodoc@main  # your published action
+      # ─────────────  ESLint + reviewdog  ─────────────
+      - name: Run ESLint (custom rules) and comment via reviewdog
+        uses: reviewdog/action-eslint@v1.33.2   # pin to a specific tag/commit
         with:
-          gh_app_id:              ${{ secrets.GH_APP_ID }}
-          gh_app_private_key:     ${{ secrets.GH_APP_PRIVATE_KEY }}
-          gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
+          workdir: backend                      # where the config & code live
+          reporter: github-pr-review            # inline review comments
+          level: error                          # only errors block the PR
+          eslint_flags: '--ext .ts . --max-warnings=0'
+          # GITHUB_TOKEN is passed automatically
