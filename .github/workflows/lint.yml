@@ -3,10 +3,14 @@ name: Swagger Decorator Lint
 on:
   pull_request:
     paths:
-      - "src/**/*.ts"
+      - 'backend/**/*.ts'
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
-  lint:
+  doc-enhancer:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,5 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint for Swagger rules
-        run: npx eslint src/**/*.ts
+      - name: Run Swagger Decorator ESLint (via GitHub App)
+        uses: avielzlevy/nestjs-autodoc@main
+        with:
+          gh_app_id:        ${{ secrets.GH_APP_ID }}
+          gh_app_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
