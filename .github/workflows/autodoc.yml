@@ -23,6 +23,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
+        working-directory: backend
         run: npm ci
 
       - name: Run Swagger Decorator ESLint (via GitHub App)
