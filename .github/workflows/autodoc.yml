@@ -28,11 +28,17 @@ jobs:
         run: npm ci --ignore-scripts
 
       # ─────────────  ESLint + reviewdog  ─────────────
-      - name: Run ESLint (custom rules) and comment via reviewdog
-        uses: reviewdog/action-eslint@v1.33.2   # pin to a specific tag/commit
+      - name: Run ESLint (custom rules) and comment via Reviewdog
+        uses: reviewdog/action-eslint@v1.33.2
         with:
-          workdir: backend                      # where the config & code live
-          reporter: github-pr-review            # inline review comments
-          level: error                          # only errors block the PR
-          eslint_flags: '--ext .ts . --max-warnings=0'
-          # GITHUB_TOKEN is passed automatically
+          workdir: backend
+          # ── Lint exactly what you linted locally ──
+          eslint_flags: '"src/**/*.ts" --ext .ts --max-warnings=0'
+          # ── Reviewdog settings ──
+          reporter: github-pr-review     # inline comments
+          level: error                   # only “error” severity
+          filter_mode: file              # report errors in any *changed file*
+          fail_level: error              # mark job red on errors
+          fail_on_error: true            # (redundant, implied by fail_level)
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      
