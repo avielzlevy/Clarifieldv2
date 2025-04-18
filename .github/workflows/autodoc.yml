@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 -f unix >../eslint.txt
+          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 >../eslint.txt
           echo "exit_code=$?"   >> "$GITHUB_OUTPUT"
           echo "report<<EOF"    >> "$GITHUB_OUTPUT"
           cat ../eslint.txt     >> "$GITHUB_OUTPUT"
