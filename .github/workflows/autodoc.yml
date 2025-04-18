@@ -60,14 +60,16 @@ jobs:
             /^[^[:space:]]/ {
               if (currentFile != "") print ""
               currentFile = $0
-              print "### **" currentFile "**\n"
+              print "### 📄 **" currentFile "**\n"
             }
             /^[[:space:]]+[0-9]+:/ {
               gsub(/^[[:space:]]+/, "", $0)
               split($0, parts, /[[:space:]]+/)
               line = parts[1]
               msg = substr($0, index($0,$4))
-              print "> Line " line " - `" msg "`"
+              rule = parts[length(parts)]
+              msgWithoutRule = substr(msg, 1, length(msg) - length(rule) - 1)
+              print "- **Line " line "** — `" msgWithoutRule "` <sub>\`" rule "\`</sub>"
             }
           ' "$FORMATTED_LOG" > "$COMMENT_LOG"
 
