@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 export class AffectedDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'The affected format',
     example: 'Text',
   })
@@ -9,7 +9,7 @@ export class AffectedDto {
   @IsString()
   format?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'The affected definition',
     example: 'Text',
   })
@@ -17,7 +17,7 @@ export class AffectedDto {
   @IsString()
   definition?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'The affected entity',
     example: 'Text',
   })
