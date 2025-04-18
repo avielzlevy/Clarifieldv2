@@ -22,6 +22,10 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addBearerAuth()
+    .addGlobalResponse({
+      status: 500,
+      description: 'Internal server error',
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

@@ -37,6 +37,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "@darraghor/eslint-plugin-nestjs-typed": "^6.4.8",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
@@ -45,6 +46,7 @@
     "@prisma/client": "^6.6.0",
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
+    "@trendyol/eslint-plugin-nest-swagger-checker-lint": "^1.0.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",

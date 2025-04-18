@@ -53,9 +53,15 @@ export class ReportsService {
     name: string,
     description: string,
   ): Promise<void> {
-    await this.prisma.report.create({
-      data: { type, name, description, status: 'pending' },
-    });
+    try {
+      await this.prisma.report.create({
+        data: { type, name, description, status: 'pending' },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      console.error('Error adding report:', error);
+      throw new InternalServerErrorException('Failed to add report');
+    }
   }
 
   /**
@@ -68,12 +74,18 @@ export class ReportsService {
     description: string,
     status: string,
   ): Promise<void> {
-    const result = await this.prisma.report.updateMany({
-      where: { type, name, description },
-      data: { status },
-    });
-    if (result.count === 0) {
-      throw new NotFoundException('Report entry not found');
+    try {
+      const result = await this.prisma.report.updateMany({
+        where: { type, name, description },
+        data: { status },
+      });
+      if (result.count === 0) {
+        throw new NotFoundException('Report entry not found');
+      }
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      console.error('Error updating report:', error);
+      throw new InternalServerErrorException('Failed to update report');
     }
   }
 }
