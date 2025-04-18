@@ -20,6 +20,8 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiConsumes,
+  ApiProduces,
 } from '@nestjs/swagger';
 
 @ApiTags('Formats')
@@ -29,6 +31,8 @@ export class FormatsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all formats' })
+  @ApiConsumes('application/json')
+  @ApiProduces('application/json')
   @ApiResponse({
     status: 200,
     description: 'Successfully retrieved all formats.',
@@ -52,6 +56,8 @@ export class FormatsController {
     description: 'Returns the count of available formats.',
     schema: { example: { amount: 5 } },
   })
+  @ApiConsumes('application/json')
+  @ApiProduces('application/json')
   async getFormatsAmount() {
     const formats = await this.formatsService.getFormats();
     return { amount: Object.keys(formats).length };
@@ -61,6 +67,8 @@ export class FormatsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add a new format' })
+  @ApiConsumes('application/json')
+  @ApiProduces('application/json')
   @ApiBody({ type: CreateFormatDto })
   @ApiResponse({
     status: 201,
@@ -87,6 +95,8 @@ export class FormatsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a format by name' })
+  @ApiConsumes('application/json')
+  @ApiProduces('application/json')
   @ApiParam({ name: 'name', type: 'string' })
   @ApiBody({ type: UpdateFormatDto })
   @ApiResponse({
@@ -117,6 +127,8 @@ export class FormatsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a format by name' })
+  @ApiConsumes('application/json')
+  @ApiProduces('application/json')
   @ApiParam({ name: 'name', type: 'string' })
   @ApiResponse({ status: 204, description: 'Format successfully deleted.' })
   @ApiResponse({ status: 406, description: 'Cannot delete static format' })
