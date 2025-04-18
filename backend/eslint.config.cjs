@@ -1,28 +1,26 @@
-// @ts-check
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import requireApiProperty from './rules/require-api-property.mjs';
-import requireApiOperation from './rules/require-api-operation.mjs';
-import requireApiResponse from './rules/require-api-response.mjs';
-import matchOptionalProp from './rules/match-optional-with-api-property-optional.mjs';
-import requireApiTags from './rules/require-api-tags.mjs';
-import requireApiBearerAuth from './rules/require-api-bearer-auth.mjs';
-import requireApiParam from './rules/require-api-param.mjs';
-import requireApiQuery from './rules/require-api-query.mjs';
-import requireApiBody from './rules/require-api-body.mjs';
-import requireApiHeader from './rules/require-api-header.mjs';
-import requireApiProduces from './rules/require-api-produces.mjs';
-import requireApiConsumes from './rules/require-api-consumes.mjs';
-import requireApiExtraModels from './rules/require-api-extra-models.mjs';
+// eslint.config.cjs
+const eslint = require('@eslint/js');
+const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
+const globals = require('globals');
+const tseslint = require('typescript-eslint');
+
+const requireApiProperty = require('./rules/require-api-property.cjs');
+const requireApiOperation = require('./rules/require-api-operation.cjs');
+const requireApiResponse = require('./rules/require-api-response.cjs');
+const matchOptionalProp = require('./rules/match-optional-with-api-property-optional.cjs');
+const requireApiTags = require('./rules/require-api-tags.cjs');
+const requireApiBearerAuth = require('./rules/require-api-bearer-auth.cjs');
+const requireApiParam = require('./rules/require-api-param.cjs');
+const requireApiQuery = require('./rules/require-api-query.cjs');
+const requireApiBody = require('./rules/require-api-body.cjs');
+const requireApiHeader = require('./rules/require-api-header.cjs');
+const requireApiProduces = require('./rules/require-api-produces.cjs');
+const requireApiConsumes = require('./rules/require-api-consumes.cjs');
+const requireApiExtraModels = require('./rules/require-api-extra-models.cjs');
+const path = require('path');
 
 
-
-
-
-
-export default tseslint.config(
+module.exports = tseslint.config(
   {
     ignores: ['eslint.config.mjs'],
   },
@@ -39,7 +37,7 @@ export default tseslint.config(
       sourceType: 'module',
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
   },

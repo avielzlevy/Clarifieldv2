@@ -1,5 +1,5 @@
 // rules/require-api-body.mjs
-export default {
+module.exports =  {
     meta: {
       type: 'problem',
       docs: {

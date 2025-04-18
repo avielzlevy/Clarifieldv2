@@ -1,5 +1,5 @@
 // rules/match-optional-with-api-property-optional.mjs
-export default {
+module.exports =  {
     meta: {
         type: 'problem',
         docs: {
