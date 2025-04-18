@@ -23,36 +23,43 @@ jobs:
 
       - name: Install deps
         run: npm ci --ignore-scripts
-
-      # OPTIONAL: only if you want to keep -f unix
-      # - name: Install unix formatter
-      #   run: npm install -D eslint-formatter-unix
-
-      # ─────────  Lint & capture output  ─────────
-      - name: Run ESLint with formatted output
+      - name: Run ESLint only on changed controllers/DTOs
         id: eslint
         shell: bash
         run: |
           set +e
-
+      
           ESLINT_LOG="../eslint-raw.txt"
           FORMATTED_LOG="../eslint-pretty.txt"
           COMMENT_LOG="../eslint-comment.txt"
-
-          # Run ESLint
-          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 > "$ESLINT_LOG"
+      
+          # Get only changed controller and DTO files in the PR
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+            | grep -E '\.controller\.ts$|\.dto\.ts$' || true)
+      
+          if [[ -z "$CHANGED_FILES" ]]; then
+            echo "No relevant files changed."
+            echo "exit_code=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+      
+          echo "Linting the following changed files:"
+          echo "$CHANGED_FILES"
+      
+          # Run ESLint only on the changed files
+          npx eslint $CHANGED_FILES --max-warnings=0 > "$ESLINT_LOG"
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
-
-          # Remove final ✖ summary line
+      
+          # Clean up ESLint output
           grep -vE '^\s*$|✖ [0-9]+ problems' "$ESLINT_LOG" \
             | sed 's|/home/runner/work/Clarifieldv2/Clarifieldv2/backend/|./|' \
             > "$FORMATTED_LOG"
-
+      
           # Count errors
           ERROR_COUNT=$(grep -c 'error' "$FORMATTED_LOG" || true)
           echo "error_count=$ERROR_COUNT" >> "$GITHUB_OUTPUT"
-
-          # Format for comment
+      
+          # Format output
           awk '
             BEGIN {
               currentFile = ""
@@ -66,19 +73,20 @@ jobs:
               gsub(/^[[:space:]]+/, "", $0)
               split($0, parts, /[[:space:]]+/)
               line = parts[1]
-              msg = substr($0, index($0,$4))
               rule = parts[length(parts)]
+              msg = substr($0, index($0,$4))
               msgWithoutRule = substr(msg, 1, length(msg) - length(rule) - 1)
-              print "- **Line " line "** — `" msgWithoutRule "` <sub>\`" rule "\`</sub>"
+              print "- **Line " line "** — `" msgWithoutRule "`"
             }
           ' "$FORMATTED_LOG" > "$COMMENT_LOG"
-
-          # Export the full report
+      
+          # Export to GitHub output
           if [[ -s "$COMMENT_LOG" ]]; then
             echo 'report<<EOF' >> "$GITHUB_OUTPUT"
             cat "$COMMENT_LOG" >> "$GITHUB_OUTPUT"
             echo 'EOF' >> "$GITHUB_OUTPUT"
           fi
+      
 
 
       # ─────────  Post (or update) a single comment  ─────────
