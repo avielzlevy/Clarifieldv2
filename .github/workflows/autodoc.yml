@@ -29,6 +29,6 @@ jobs:
       - name: Run Swagger Decorator ESLint (via GitHub App)
         uses: avielzlevy/nestjs-autodoc@main
         with:
-          gh_app_id:        ${{ secrets.GH_APP_ID }}
-          gh_app_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          gh_app_id:              ${{ secrets.GH_APP_ID }}
+          gh_app_private_key:     ${{ secrets.GH_APP_PRIVATE_KEY }}
           gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
