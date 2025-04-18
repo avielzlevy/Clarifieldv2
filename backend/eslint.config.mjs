@@ -38,7 +38,7 @@ export default tseslint.config(
       parserOptions: {
         project: './tsconfig.json',
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: new URL('.', import.meta.url).pathname,
       },
     },
   },

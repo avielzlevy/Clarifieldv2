@@ -1,26 +1,22 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateChangeDto } from './changes.dto';
+import { Change } from '@prisma/client';
 
 @Injectable()
 export class ChangesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Retrieves all changes grouped by their type.
-   */
-  async getChanges(): Promise<Record<string, any[]>> {
+  async getChanges(): Promise<Record<string, Change[]>> {
     try {
-      // Query all changes from PostgreSQL
       const changes = await this.prisma.change.findMany();
-      // Group changes by type
       const grouped = changes.reduce(
         (acc, change) => {
           if (!acc[change.type]) acc[change.type] = [];
           acc[change.type].push(change);
           return acc;
         },
-        {} as Record<string, any[]>,
+        {} as Record<string, Change[]>,
       );
       return grouped;
     } catch (error) {
@@ -29,9 +25,6 @@ export class ChangesService {
     }
   }
 
-  /**
-   * Adds a change record to the database.
-   */
   async addChange(change: CreateChangeDto): Promise<void> {
     const { type, name, timestamp, before, after } = change;
     try {
@@ -39,7 +32,6 @@ export class ChangesService {
         data: {
           type,
           name,
-          // Converting the timestamp string to a Date object
           timestamp: new Date(timestamp),
           before,
           after,
