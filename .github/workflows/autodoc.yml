@@ -22,13 +22,20 @@ jobs:
         with:
           node-version: 18
 
+      # install your backend deps
       - name: Install dependencies
-        working-directory: backend
         run: npm ci
+        working-directory: backend
+
+      # *** NEW: expose your ESLint config at the repo root for the action ***
+      - name: Expose ESLint config
+        run: |
+          cp backend/.eslintrc.js .eslintrc.js
+          # if you have .eslintrc.json or .eslintrc.yaml instead, copy that too
 
       - name: Run Swagger Decorator ESLint (via GitHub App)
         uses: avielzlevy/nestjs-autodoc@main
         with:
-          gh_app_id:        ${{ secrets.GH_APP_ID }}
-          gh_app_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          gh_app_id:              ${{ secrets.GH_APP_ID }}
+          gh_app_private_key:     ${{ secrets.GH_APP_PRIVATE_KEY }}
           gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
