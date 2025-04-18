@@ -24,8 +24,13 @@ jobs:
         with: { node-version: 22 }
 
       - name: Install deps
-        run: npm ci --ignore-scripts
-
+        run: |
+          npm ci --ignore-scripts
+          node --version
+          npm --version
+          npx eslint --version
+          npx tsc --version
+          npx eslint --print-config .eslintrc.js
 
       # ─────────  Lint & capture output  ─────────
       - name: Detect and lint changed controller/DTO files
