@@ -1,5 +1,5 @@
 // rules/require-api-extra-models.mjs
-module.exports =  {
+export default {
     meta: {
       type: 'problem',
       docs: {
