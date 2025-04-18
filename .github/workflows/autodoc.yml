@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -36,9 +38,13 @@ jobs:
           FORMATTED_LOG="../eslint-pretty.txt"
           COMMENT_LOG="../eslint-comment.txt"
 
-          # Get list of changed files in the PR
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD \ | grep -E '\.controller\.ts$|\.dto\.ts$' \| sed 's|^backend/||' || true)
+          # Fetch full Git history and base branch
+          git fetch origin ${{ github.base_ref }}
 
+          # Get only changed DTO/controller files and adjust path for working dir
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD \
+            | grep -E '\.controller\.ts$|\.dto\.ts$' \
+            | sed 's|^backend/||' || true)
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "No relevant files changed."
@@ -47,10 +53,10 @@ jobs:
             exit 0
           fi
 
-          echo "Changed files:"
+          echo "Linting these files:"
           echo "$CHANGED_FILES"
 
-          # Run ESLint only on the changed files
+          # Run ESLint
           npx eslint $CHANGED_FILES --max-warnings=0 > "$ESLINT_LOG"
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
@@ -59,7 +65,6 @@ jobs:
             | sed 's|/home/runner/work/Clarifieldv2/Clarifieldv2/backend/|./|' \
             > "$FORMATTED_LOG"
 
-          # Count errors
           ERROR_COUNT=$(grep -c 'error' "$FORMATTED_LOG" || true)
           echo "error_count=$ERROR_COUNT" >> "$GITHUB_OUTPUT"
 
@@ -87,6 +92,7 @@ jobs:
             cat "$COMMENT_LOG" >> "$GITHUB_OUTPUT"
             echo 'EOF' >> "$GITHUB_OUTPUT"
           fi
+
 
 
       # ─────────  Post (or update) a single comment  ─────────
