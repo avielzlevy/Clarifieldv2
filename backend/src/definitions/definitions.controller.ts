@@ -18,6 +18,7 @@ import {
   UpdateDefinitionDto,
 } from './definitions.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+<<<<<<< HEAD
 import {
   ApiOperation,
   ApiParam,
@@ -32,10 +33,15 @@ import {
 @Controller('definitions')
 @ApiTags('Definitions')
 @ApiTags('Definitions')
+=======
+
+@Controller('definitions')
+>>>>>>> parent of 450c062 (feat: enhance API documentation and validation rules)
 export class DefinitionsController {
   constructor(private readonly definitionsService: DefinitionsService) {}
 
   @Get()
+<<<<<<< HEAD
   @ApiOperation({
     summary: 'Get all definitions',
     description: 'Returns all available definitions.',
@@ -46,12 +52,15 @@ export class DefinitionsController {
   })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
+=======
+>>>>>>> parent of 450c062 (feat: enhance API documentation and validation rules)
   async getDefinitions(): Promise<{ [name: string]: DefinitionData }> {
     const definitions = await this.definitionsService.getDefinitions();
     return definitions;
   }
 
   @Get('amount')
+<<<<<<< HEAD
   @ApiOperation({
     summary: 'Get total number of definitions',
     description: 'Returns the count of available definitions.',
@@ -63,6 +72,8 @@ export class DefinitionsController {
   })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
+=======
+>>>>>>> parent of 450c062 (feat: enhance API documentation and validation rules)
   async getDefinitionsAmount() {
     const definitions = await this.definitionsService.getDefinitions();
     const definitionsAmount = Object.keys(definitions).length;
@@ -70,6 +81,7 @@ export class DefinitionsController {
   }
 
   @Get(':name')
+<<<<<<< HEAD
   @ApiOperation({
     summary: 'Get a specific definition by name',
     description: 'Returns the details of a specific definition.',
@@ -85,6 +97,8 @@ export class DefinitionsController {
   })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
+=======
+>>>>>>> parent of 450c062 (feat: enhance API documentation and validation rules)
   async getDefinition(@Param() params: DefinitionNameDto) {
     const definition = await this.definitionsService.getDefinition(params.name);
     return definition;
@@ -92,6 +106,7 @@ export class DefinitionsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+<<<<<<< HEAD
   @ApiOperation({
     summary: 'Add a new definition',
     description: 'Creates a new definition with the provided details.',
@@ -111,6 +126,8 @@ export class DefinitionsController {
   })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
+=======
+>>>>>>> parent of 450c062 (feat: enhance API documentation and validation rules)
   async addDefinition(@Body() body: CreateDefinitionDto) {
     const { name, format, description } = body;
     await this.definitionsService.addDefinition(name, {
@@ -122,6 +139,7 @@ export class DefinitionsController {
 
   @Put(':name')
   @UseGuards(JwtAuthGuard)
+<<<<<<< HEAD
   @ApiOperation({
     summary: 'Update an existing definition',
     description: 'Updates the details of an existing definition by name.',
@@ -150,6 +168,8 @@ export class DefinitionsController {
     description: 'Details of the definition to be updated',
     type: UpdateDefinitionDto,
   })
+=======
+>>>>>>> parent of 450c062 (feat: enhance API documentation and validation rules)
   async updateDefinition(
     @Param() params: DefinitionNameDto,
     @Body() body: UpdateDefinitionDto,
@@ -166,6 +186,7 @@ export class DefinitionsController {
   @Delete(':name')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
+<<<<<<< HEAD
   @Delete(':name')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
@@ -189,6 +210,8 @@ export class DefinitionsController {
     description: 'Name of the definition to delete',
     example: 'pdf',
   })
+=======
+>>>>>>> parent of 450c062 (feat: enhance API documentation and validation rules)
   async deleteDefinition(@Param() params: DefinitionNameDto) {
     const { name } = params;
     await this.definitionsService.deleteDefinition(name);
