@@ -3,11 +3,14 @@ name: Backend ESLint
 on:
   pull_request:
     paths:
-      - 'backend/**'        # only run when backend code changes
+      # run the job only when backend source changes
+      - 'backend/src/**/*.controller.ts'
+      - 'backend/src/**/*.dto.ts'
+      - '.github/workflows/backend-lint.yml'
 
 permissions:
-  contents: read            # required for checkout
-  pull-requests: write      # needed to add review comments
+  contents: read
+  pull-requests: write     # needed to create / update the single comment
 
 jobs:
   lint:
@@ -17,7 +20,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ─────────────  Node & deps  ─────────────
       - name: Use Node 20
         uses: actions/setup-node@v4
         with:
@@ -27,18 +29,20 @@ jobs:
         working-directory: backend
         run: npm ci --ignore-scripts
 
-      # ─────────────  ESLint + reviewdog  ─────────────
-      - name: Run ESLint (custom rules) and comment via Reviewdog
+      # ─────────────  ESLint + Reviewdog  ─────────────
+      - name: Run ESLint (controllers & DTOs) → single PR comment
         uses: reviewdog/action-eslint@v1.33.2
         with:
           workdir: backend
-          # ── Lint exactly what you linted locally ──
-          eslint_flags: '"src/**/*.ts" --ext .ts --max-warnings=0'
-          # ── Reviewdog settings ──
-          reporter: github-pr-review     # inline comments
-          level: error                   # only “error” severity
-          filter_mode: file              # report errors in any *changed file*
-          fail_level: error              # mark job red on errors
-          fail_on_error: true            # (redundant, implied by fail_level)
+
+          # ✦  Lint only the patterns you care about
+          #    Brace‑expansion works with ESLint's fast-glob.
+          eslint_flags: 'src/**/*.{controller,dto}.ts --max-warnings=0'
+
+          # ✦  Reviewdog behaviour
+          reporter: github-pr-comment   # ONE aggregated comment
+          filter_mode: nofilter         # include errors even on untouched lines
+          level: error                  # display only error‑level problems
+          fail_level: error             # mark job ❌ if any error remains
+
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      
