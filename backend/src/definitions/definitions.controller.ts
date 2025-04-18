@@ -25,11 +25,8 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiBody,
-<<<<<<< HEAD
   ApiConsumes,
   ApiProduces,
-=======
->>>>>>> 450c062 (feat: enhance API documentation and validation rules)
 } from '@nestjs/swagger';
 
 @Controller('definitions')
@@ -46,11 +43,8 @@ export class DefinitionsController {
     status: 200,
     description: 'Successfully retrieved all definitions.',
   })
-<<<<<<< HEAD
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-=======
->>>>>>> 450c062 (feat: enhance API documentation and validation rules)
   async getDefinitions(): Promise<{ [name: string]: DefinitionData }> {
     const definitions = await this.definitionsService.getDefinitions();
     return definitions;
@@ -66,11 +60,8 @@ export class DefinitionsController {
     description: 'Returns the count of available definitions.',
     schema: { example: { amount: 5 } },
   })
-<<<<<<< HEAD
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-=======
->>>>>>> 450c062 (feat: enhance API documentation and validation rules)
   async getDefinitionsAmount() {
     const definitions = await this.definitionsService.getDefinitions();
     const definitionsAmount = Object.keys(definitions).length;
@@ -91,11 +82,8 @@ export class DefinitionsController {
     status: 200,
     description: 'Successfully retrieved the definition.',
   })
-<<<<<<< HEAD
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-=======
->>>>>>> 450c062 (feat: enhance API documentation and validation rules)
   async getDefinition(@Param() params: DefinitionNameDto) {
     const definition = await this.definitionsService.getDefinition(params.name);
     return definition;
@@ -120,11 +108,8 @@ export class DefinitionsController {
     description: 'Details of the definition to be created',
     type: CreateDefinitionDto,
   })
-<<<<<<< HEAD
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-=======
->>>>>>> 450c062 (feat: enhance API documentation and validation rules)
   async addDefinition(@Body() body: CreateDefinitionDto) {
     const { name, format, description } = body;
     await this.definitionsService.addDefinition(name, {
@@ -140,11 +125,8 @@ export class DefinitionsController {
     summary: 'Update an existing definition',
     description: 'Updates the details of an existing definition by name.',
   })
-<<<<<<< HEAD
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-=======
->>>>>>> 450c062 (feat: enhance API documentation and validation rules)
   @ApiResponse({
     status: 200,
     description: 'Successfully updated the definition.',
@@ -190,11 +172,8 @@ export class DefinitionsController {
     summary: 'Delete a definition',
     description: 'Deletes a specific definition by name.',
   })
-<<<<<<< HEAD
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-=======
->>>>>>> 450c062 (feat: enhance API documentation and validation rules)
   @ApiResponse({
     status: 204,
     description: 'Successfully deleted the definition.',
