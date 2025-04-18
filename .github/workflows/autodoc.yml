@@ -2,7 +2,6 @@ name: Backend ESLint (controllers & DTOs)
 
 on:
   pull_request:
-    # Fire only when these files — or the workflow itself — change
     paths:
       - 'backend/src/**/*.controller.ts'
       - 'backend/src/**/*.dto.ts'
@@ -10,82 +9,45 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write   # ⬅ needed for the comment step
+  pull-requests: write           # needed to post the comment
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend   # stay inside backend/
+    defaults: { run: { working-directory: backend } }
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
       - name: Install deps
         run: npm ci --ignore-scripts
 
-      # ── Run ESLint, capture text output, preserve exit code ──
+      # OPTIONAL: only if you want to keep -f unix
+      # - name: Install unix formatter
+      #   run: npm install -D eslint-formatter-unix
+
+      # ─────────  Lint & capture output  ─────────
       - name: Run ESLint
         id: eslint
         shell: bash
         run: |
           set +e
-          # compact = single‑line output that’s easy to post‑process
-          RAW="$(npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" \
-                --format compact --max-warnings=0)"
-          EXIT=$?
-      
-          # • strip the long runner prefix
-          # • turn “error” → dash, keep rule in back‑ticks
-          # • add bullet prefix
-          REPORT="$(printf '%s\n' "$RAW" \
-            | sed -E 's@.*/backend/src/@@' \
-            | sed -E 's@ error @ — @' \
-            | sed -E 's@  ([^ ]+)$@  (`\1`)@' \
-            | sed 's@^@- @')"
-      
-          COUNT=$(printf '%s\n' "$REPORT" | grep -c '^- ')
-          echo "exit_code=$EXIT"      >> "$GITHUB_OUTPUT"
-          echo "report<<EOF"          >> "$GITHUB_OUTPUT"
-          echo "### ❌ $COUNT ESLint errors" >> "$GITHUB_OUTPUT"
-          echo                         >> "$GITHUB_OUTPUT"
-          echo "$REPORT"               >> "$GITHUB_OUTPUT"
-          echo "EOF"                   >> "$GITHUB_OUTPUT"
+          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 >../eslint.txt
+          echo "exit_code=$?"           >> "$GITHUB_OUTPUT"
+          echo 'report<<EOF'            >> "$GITHUB_OUTPUT"
+          cat ../eslint.txt             >> "$GITHUB_OUTPUT"
+          echo 'EOF'                    >> "$GITHUB_OUTPUT"
 
+      # ─────────  Post (or update) a single comment  ─────────
       - name: PR summary comment
-        if: steps.eslint.outputs.exit_code != '0'
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## 🚨 ESLint errors in `*.controller.ts` / `*.dto.ts`
-            <details><summary>Click to expand</summary>
-
-            ${{ steps.eslint.outputs.report }}
-
-            </details>
-          edit-mode: replace
-
-      - name: PR summary comment
-        if: steps.eslint.outputs.exit_code != '0'
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: ${{ steps.eslint.outputs.report }}
-          edit-mode: replace
-
-      # ── Create or update a single comment with the full report ──
-      - name: Post / update PR comment
         if: steps.eslint.outputs.report != ''
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ## 🚨 ESLint errors in `*.controller.ts` / `*.dto.ts`
+            ## 🚨 ESLint errors in DTO & Controller files
             <details><summary>Click to expand</summary>
 
             ```text
@@ -93,9 +55,9 @@ jobs:
             ```
 
             </details>
-          edit-mode: replace   # keep just one comment
+          edit-mode: replace           # keeps just one comment thread
 
-      # ── Fail the job if ESLint found errors ──
+      # ─────────  Fail the job when ESLint found errors  ─────────
       - name: Fail if ESLint errored
         if: steps.eslint.outputs.exit_code != '0'
         run: exit 1
