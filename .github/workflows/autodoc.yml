@@ -1,48 +1,63 @@
-name: Backend ESLint
+name: Backend ESLint (controllers & DTOs)
 
 on:
   pull_request:
+    # Fire only when these files — or the workflow itself — change
     paths:
-      # run the job only when backend source changes
       - 'backend/src/**/*.controller.ts'
       - 'backend/src/**/*.dto.ts'
       - '.github/workflows/backend-lint.yml'
 
 permissions:
   contents: read
-  pull-requests: write     # needed to create / update the single comment
+  pull-requests: write   # ⬅ needed for the comment step
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend   # stay inside backend/
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Use Node 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
 
-      - name: Install backend deps
-        working-directory: backend
+      - name: Install deps
         run: npm ci --ignore-scripts
 
-      # ─────────────  ESLint + Reviewdog  ─────────────
-      - name: Run ESLint (controllers & DTOs) → single PR comment
-        uses: reviewdog/action-eslint@v1.33.2
+      # ── Run ESLint, capture text output, preserve exit code ──
+      - name: Lint controllers & DTOs
+        id: eslint
+        shell: bash
+        run: |
+          set +e
+          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 -f unix >../eslint.txt
+          echo "exit_code=$?"   >> "$GITHUB_OUTPUT"
+          echo "report<<EOF"    >> "$GITHUB_OUTPUT"
+          cat ../eslint.txt     >> "$GITHUB_OUTPUT"
+          echo "EOF"            >> "$GITHUB_OUTPUT"
+
+      # ── Create or update a single comment with the full report ──
+      - name: Post / update PR comment
+        if: steps.eslint.outputs.report != ''
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          workdir: backend
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## 🚨 ESLint errors in `*.controller.ts` / `*.dto.ts`
+            <details><summary>Click to expand</summary>
 
-          # ✦  Lint only the patterns you care about
-          #    Brace‑expansion works with ESLint's fast-glob.
-          eslint_flags: 'src/**/*.{controller,dto}.ts --max-warnings=0'
+            ```text
+            ${{ steps.eslint.outputs.report }}
+            ```
 
-          # ✦  Reviewdog behaviour
-          reporter: github-pr-check   # ONE aggregated comment
-          filter_mode: nofilter         # include errors even on untouched lines
-          level: error                  # display only error‑level problems
-          fail_level: error             # mark job ❌ if any error remains
+            </details>
+          edit-mode: replace   # keep just one comment
 
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      # ── Fail the job if ESLint found errors ──
+      - name: Fail if ESLint errored
+        if: steps.eslint.outputs.exit_code != '0'
+        run: exit 1
