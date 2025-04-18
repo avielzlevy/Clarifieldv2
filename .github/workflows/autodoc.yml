@@ -30,7 +30,7 @@ jobs:
       # *** NEW: expose your ESLint config at the repo root for the action ***
       - name: Expose ESLint config
         run: |
-          cp backend/.eslintrc.js .eslintrc.js
+          cp backend/eslint.config.mjs eslint.config.mjs
           # if you have .eslintrc.json or .eslintrc.yaml instead, copy that too
 
       - name: Run Swagger Decorator ESLint (via GitHub App)
