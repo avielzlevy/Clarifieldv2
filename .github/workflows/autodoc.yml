@@ -1,28 +1,35 @@
-name: Lint Backend
+name: Swagger Decorator Lint
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]  # ← trigger on commit push
     paths:
-      - 'backend/**/*.ts'
+      - 'backend/**/*.ts'                   # ← only if TS files in backend changed
+
+permissions:
+  contents: read
+  pull-requests: write                      # ← allows posting comments
 
 jobs:
-  lint:
+  doc-enhancer:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: Install dependencies
+      - name: Install backend dependencies
+        working-directory: backend
         run: npm ci
 
-      - name: Run ESLint
-        run: npx eslint . --config ../backend/eslint.config.mjs
+      - name: Run Swagger Decorator ESLint (via GitHub App)
+        uses: avielzlevy/nestjs-autodoc@main  # your published action
+        with:
+          gh_app_id:              ${{ secrets.GH_APP_ID }}
+          gh_app_private_key:     ${{ secrets.GH_APP_PRIVATE_KEY }}
+          gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
