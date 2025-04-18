@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -33,6 +35,9 @@ jobs:
           FORMATTED_LOG="../eslint-pretty.txt"
           COMMENT_LOG="../eslint-comment.txt"
       
+          # Ensure the base branch exists locally
+          git fetch origin ${{ github.base_ref }} --depth=1
+      
           # Get only changed controller and DTO files in the PR
           CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
             | grep -E '\.controller\.ts$|\.dto\.ts$' || true)
@@ -46,7 +51,7 @@ jobs:
           echo "Linting the following changed files:"
           echo "$CHANGED_FILES"
       
-          # Run ESLint only on the changed files
+          # Run ESLint only on changed files
           npx eslint $CHANGED_FILES --max-warnings=0 > "$ESLINT_LOG"
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
       
@@ -76,19 +81,16 @@ jobs:
               rule = parts[length(parts)]
               msg = substr($0, index($0,$4))
               msgWithoutRule = substr(msg, 1, length(msg) - length(rule) - 1)
-              print "- **Line " line "** — `" msgWithoutRule "`"
+              print "- **Line " line "** — `" msgWithoutRule "` <sub>\`" rule "\`</sub>"
             }
           ' "$FORMATTED_LOG" > "$COMMENT_LOG"
       
-          # Export to GitHub output
           if [[ -s "$COMMENT_LOG" ]]; then
             echo 'report<<EOF' >> "$GITHUB_OUTPUT"
             cat "$COMMENT_LOG" >> "$GITHUB_OUTPUT"
             echo 'EOF' >> "$GITHUB_OUTPUT"
           fi
       
-
-
       # ─────────  Post (or update) a single comment  ─────────
       - name: PR summary comment
         if: steps.eslint.outputs.report != ''
