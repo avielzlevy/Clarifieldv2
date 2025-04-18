@@ -29,16 +29,55 @@ jobs:
       #   run: npm install -D eslint-formatter-unix
 
       # ─────────  Lint & capture output  ─────────
-      - name: Run ESLint
+      - name: Run ESLint with formatted output
         id: eslint
         shell: bash
         run: |
           set +e
-          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 >../eslint.txt
-          echo "exit_code=$?"           >> "$GITHUB_OUTPUT"
-          echo 'report<<EOF'            >> "$GITHUB_OUTPUT"
-          cat ../eslint.txt             >> "$GITHUB_OUTPUT"
-          echo 'EOF'                    >> "$GITHUB_OUTPUT"
+
+          ESLINT_LOG="../eslint-raw.txt"
+          FORMATTED_LOG="../eslint-pretty.txt"
+          COMMENT_LOG="../eslint-comment.txt"
+
+          # Run ESLint
+          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 > "$ESLINT_LOG"
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+          # Remove final ✖ summary line
+          grep -vE '^\s*$|✖ [0-9]+ problems' "$ESLINT_LOG" \
+            | sed 's|/home/runner/work/Clarifieldv2/Clarifieldv2/backend/|./|' \
+            > "$FORMATTED_LOG"
+
+          # Count errors
+          ERROR_COUNT=$(grep -c 'error' "$FORMATTED_LOG" || true)
+          echo "error_count=$ERROR_COUNT" >> "$GITHUB_OUTPUT"
+
+          # Format for comment
+          awk '
+            BEGIN {
+              currentFile = ""
+            }
+            /^[^[:space:]]/ {
+              if (currentFile != "") print ""
+              currentFile = $0
+              print "### **" currentFile "**\n"
+            }
+            /^[[:space:]]+[0-9]+:/ {
+              gsub(/^[[:space:]]+/, "", $0)
+              split($0, parts, /[[:space:]]+/)
+              line = parts[1]
+              msg = substr($0, index($0,$4))
+              print "> Line " line " - `" msg "`"
+            }
+          ' "$FORMATTED_LOG" > "$COMMENT_LOG"
+
+          # Export the full report
+          if [[ -s "$COMMENT_LOG" ]]; then
+            echo 'report<<EOF' >> "$GITHUB_OUTPUT"
+            cat "$COMMENT_LOG" >> "$GITHUB_OUTPUT"
+            echo 'EOF' >> "$GITHUB_OUTPUT"
+          fi
+
 
       # ─────────  Post (or update) a single comment  ─────────
       - name: PR summary comment
@@ -47,15 +86,12 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ## 🚨 ESLint errors in DTO & Controller files
-            <details><summary>Click to expand</summary>
-
-            ```text
+            ## 🚨 ${{ steps.eslint.outputs.error_count }} ESLint errors in DTO & Controller files
+      
             ${{ steps.eslint.outputs.report }}
-            ```
-
-            </details>
-          edit-mode: replace           # keeps just one comment thread
+      
+          edit-mode: replace
+    
 
       # ─────────  Fail the job when ESLint found errors  ─────────
       - name: Fail if ESLint errored
