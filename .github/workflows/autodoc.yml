@@ -30,8 +30,6 @@ jobs:
         working-directory: backend
 
       - name: Run Swagger Decorator ESLint (via GitHub App)
-        env:
-          NODE_OPTIONS: "--experimental-loader=./.github/strip-query.mjs"
         uses: avielzlevy/nestjs-autodoc@main
         with:
           gh_app_id: ${{ secrets.GH_APP_ID }}
