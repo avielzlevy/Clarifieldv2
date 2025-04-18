@@ -1,5 +1,5 @@
 // rules/require-api-bearer-auth.mjs
-export default {
+module.exports =  {
     meta: {
       type: 'problem',
       docs: {

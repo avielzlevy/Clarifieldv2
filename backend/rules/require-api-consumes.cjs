@@ -1,5 +1,5 @@
 // rules/require-api-consumes.mjs
-export default {
+module.exports =  {
   meta: {
     type: 'problem',
     docs: {

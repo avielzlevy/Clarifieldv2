@@ -1,9 +1,9 @@
-// rules/require-api-response.mjs
-export default {
+// rules/require-api-produces.mjs
+module.exports =  {
     meta: {
       type: 'problem',
       docs: {
-        description: 'Ensure every controller method has at least one @ApiResponse() decorator',
+        description: 'Ensure every controller method has an @ApiProduces() decorator',
       },
       schema: [],
     },
@@ -15,8 +15,8 @@ export default {
   
       return {
         ClassDeclaration(node) {
-          // Only inspect @Controller classes
-          const isController = (node.decorators || []).some((dec) => {
+          const decorators = node.decorators || [];
+          const isController = decorators.some((dec) => {
             const expr = dec.expression;
             return (
               expr.type === 'CallExpression' &&
@@ -27,6 +27,7 @@ export default {
           if (!isController) return;
   
           for (const member of node.body.body) {
+            // only real methods (skip constructors, getters, setters, etc.)
             if (
               member.type !== 'MethodDefinition' ||
               member.kind !== 'method' ||
@@ -35,19 +36,19 @@ export default {
               continue;
             }
   
-            const hasApiResponse = (member.decorators || []).some((dec) => {
+            const hasProduces = (member.decorators || []).some((dec) => {
               const expr = dec.expression;
               return (
                 expr.type === 'CallExpression' &&
                 expr.callee.type === 'Identifier' &&
-                expr.callee.name === 'ApiResponse'
+                expr.callee.name === 'ApiProduces'
               );
             });
   
-            if (!hasApiResponse) {
+            if (!hasProduces) {
               context.report({
                 node: member.key,
-                message: `Method '${member.key.name}' is missing at least one @ApiResponse() decorator.`,
+                message: `Method '${member.key.name}' is missing @ApiProduces() decorator.`,
               });
             }
           }
