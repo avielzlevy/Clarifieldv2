@@ -12,6 +12,7 @@ permissions:
 jobs:
   doc-enhancer:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -21,16 +22,10 @@ jobs:
         with:
           node-version: 18
 
-      # 1. install your backend deps
       - name: Install dependencies
-        run: npm ci
         working-directory: backend
+        run: npm ci
 
-      # 2. expose your flat ESLint config as "eslint.config.mjs" at the repo root
-      - name: Expose ESLint flat config
-        run: cp backend/eslint.config.mjs eslint.config.mjs
-
-      # 3. run the NestJS‑Autodoc action (it lints from the repo root)
       - name: Run Swagger Decorator ESLint (via GitHub App)
         uses: avielzlevy/nestjs-autodoc@main
         with:
