@@ -40,7 +40,7 @@ jobs:
           eslint_flags: 'src/**/*.{controller,dto}.ts --max-warnings=0'
 
           # ✦  Reviewdog behaviour
-          reporter: github-pr-comment   # ONE aggregated comment
+          reporter: github-pr-check   # ONE aggregated comment
           filter_mode: nofilter         # include errors even on untouched lines
           level: error                  # display only error‑level problems
           fail_level: error             # mark job ❌ if any error remains
