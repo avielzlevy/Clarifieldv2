@@ -3,7 +3,7 @@ name: Swagger Decorator Lint
 on:
   pull_request:
     paths:
-      - "backend/**/*.ts"
+      - 'backend/**/*.ts'
 
 permissions:
   contents: read
@@ -12,33 +12,28 @@ permissions:
 jobs:
   doc-enhancer:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Checkout your code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3. Install your backend dependencies
+      # 1. install your backend deps
       - name: Install dependencies
-        working-directory: backend
         run: npm ci
+        working-directory: backend
 
-      # 4. Copy your flat ESLint config into the workspace root
-      #    so that ESLint (and nestjs-autodoc) can see it.
-      - name: Expose ESLint config
-        run: |
-          cp backend/eslint.config.mjs .eslintrc.mjs
+      # 2. expose your flat ESLint config as "eslint.config.mjs" at the repo root
+      - name: Expose ESLint flat config
+        run: cp backend/eslint.config.mjs eslint.config.mjs
 
-      # 5. Run the NestJS‑Autodoc Action from the repo root
+      # 3. run the NestJS‑Autodoc action (it lints from the repo root)
       - name: Run Swagger Decorator ESLint (via GitHub App)
         uses: avielzlevy/nestjs-autodoc@main
         with:
-          gh_app_id: ${{ secrets.GH_APP_ID }}
-          gh_app_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          gh_app_id:              ${{ secrets.GH_APP_ID }}
+          gh_app_private_key:     ${{ secrets.GH_APP_PRIVATE_KEY }}
           gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
