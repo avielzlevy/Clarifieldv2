@@ -13,6 +13,7 @@ import requireApiParam from './rules/require-api-param.mjs';
 import requireApiQuery from './rules/require-api-query.mjs';
 import requireApiBody from './rules/require-api-body.mjs';
 import requireApiHeader from './rules/require-api-header.mjs';
+import requireApiExtraModels from './rules/require-api-extra-models.mjs';
 
 
 
@@ -54,6 +55,7 @@ export default tseslint.config(
           'require-api-query': requireApiQuery,
           'require-api-body': requireApiBody,
           'require-api-header': requireApiHeader,
+          'require-api-extra-models': requireApiExtraModels,
         },
       },
     },
@@ -71,6 +73,7 @@ export default tseslint.config(
       'custom/require-api-query': 'error',
       'custom/require-api-body': 'error',
       'custom/require-api-header': 'error',
+      'custom/require-api-extra-models': 'error',
     },
   },
 );
