@@ -34,23 +34,37 @@ jobs:
         shell: bash
         run: |
           set +e
-          OUT=$(npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" -f compact --max-warnings=0)
-          EXIT=$?
-          COUNT=$(printf '%s\n' "$OUT" | grep -c ': error ')
-          SUMMARY=$(printf '%s\n' "$OUT" |
-            sed -E 's@.*/backend/src/@@' |
-            awk -F: '{
-              file=$1; line=$2; col=$3;
-              $1=$2=$3=""; sub(/^:[^:]*:?/, ""); msg=$0;
-              split(msg,a,"  "); rule=a[length(a)];
-              printf "- **%s**:%s:%s — %s  (`%s`)\n", file,line,col,a[1],rule
-            }')
-          echo "exit_code=$EXIT" >> "$GITHUB_OUTPUT"
-          echo "report<<EOF"     >> "$GITHUB_OUTPUT"
-          echo "### ❌ ${COUNT} ESLint errors" >> "$GITHUB_OUTPUT"
-          echo ""                 >> "$GITHUB_OUTPUT"
-          echo "$SUMMARY"         >> "$GITHUB_OUTPUT"
-          echo "EOF"              >> "$GITHUB_OUTPUT"
+          # Run ESLint with the built‑in “compact” formatter
+          RAW="$(npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" \
+                --format compact --max-warnings=0)"
+          CODE=$?
+
+          # 1) drop the runner path   2) add a leading dash for markdown bullets
+          REPORT="$(printf '%s\n' "$RAW" \
+                  | sed -E 's@.*/backend/src/@@' \
+                  | sed -E 's@^@- @')"
+
+          ERRORS=$(printf '%s\n' "$REPORT" | grep -c '^- ')
+          echo "exit_code=$CODE"              >> "$GITHUB_OUTPUT"
+          echo "report<<EOF"                  >> "$GITHUB_OUTPUT"
+          echo "### ❌ $ERRORS ESLint errors" >> "$GITHUB_OUTPUT"
+          echo                                >> "$GITHUB_OUTPUT"
+          echo "$REPORT"                      >> "$GITHUB_OUTPUT"
+          echo "EOF"                          >> "$GITHUB_OUTPUT"
+
+      - name: PR summary comment
+        if: steps.eslint.outputs.exit_code != '0'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## 🚨 ESLint errors in `*.controller.ts` / `*.dto.ts`
+            <details><summary>Click to expand</summary>
+
+            ${{ steps.eslint.outputs.report }}
+
+            </details>
+          edit-mode: replace
 
       - name: PR summary comment
         if: steps.eslint.outputs.exit_code != '0'
