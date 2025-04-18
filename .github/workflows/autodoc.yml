@@ -37,7 +37,8 @@ jobs:
           COMMENT_LOG="../eslint-comment.txt"
 
           # Get list of changed files in the PR
-          CHANGED_FILES=$(git fetch origin ${{ github.base_ref }} && git diff --name-only origin/${{ github.base_ref }} HEAD | grep -E '\.controller\.ts$|\.dto\.ts$' || true)
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD \ | grep -E '\.controller\.ts$|\.dto\.ts$' \| sed 's|^backend/||' || true)
+
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "No relevant files changed."
