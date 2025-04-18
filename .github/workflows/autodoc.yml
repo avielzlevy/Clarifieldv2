@@ -1,37 +1,28 @@
-name: Swagger Decorator Lint
+name: Lint Backend
 
 on:
   pull_request:
     paths:
-      - "backend/**/*.ts"
-
-permissions:
-  contents: read # for checkout
-  issues: write # to post comments on PRs
-  pull-requests: write # if you ever update PR metadata
+      - 'backend/**/*.ts'
 
 jobs:
-  doc-enhancer:
+  lint:
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install backend dependencies
-        run: npm ci
+    defaults:
+      run:
         working-directory: backend
 
-      - name: Run Swagger Decorator ESLint (via GitHub App)
-        uses: avielzlevy/nestjs-autodoc@main
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          gh_app_id: ${{ secrets.GH_APP_ID }}
-          gh_app_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          gh_app_installation_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint . --config ../backend/eslint.config.mjs
