@@ -26,7 +26,7 @@ jobs:
 
 
       # ─────────  Lint & capture output  ─────────
-      - name: Run ESLint with formatted output
+      - name: Detect and lint changed controller/DTO files
         id: eslint
         shell: bash
         run: |
@@ -36,11 +36,24 @@ jobs:
           FORMATTED_LOG="../eslint-pretty.txt"
           COMMENT_LOG="../eslint-comment.txt"
 
-          # Run ESLint
-          npx eslint "src/**/*.controller.ts" "src/**/*.dto.ts" --max-warnings=0 > "$ESLINT_LOG"
+          # Get list of changed files in the PR
+          CHANGED_FILES=$(git fetch origin ${{ github.base_ref }} && git diff --name-only origin/${{ github.base_ref }} HEAD | grep -E '\.controller\.ts$|\.dto\.ts$' || true)
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No relevant files changed."
+            echo "exit_code=0" >> "$GITHUB_OUTPUT"
+            echo "error_count=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Run ESLint only on the changed files
+          npx eslint $CHANGED_FILES --max-warnings=0 > "$ESLINT_LOG"
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
-          # Remove final ✖ summary line
+          # Clean up output
           grep -vE '^\s*$|✖ [0-9]+ problems' "$ESLINT_LOG" \
             | sed 's|/home/runner/work/Clarifieldv2/Clarifieldv2/backend/|./|' \
             > "$FORMATTED_LOG"
@@ -51,9 +64,7 @@ jobs:
 
           # Format for comment
           awk '
-            BEGIN {
-              currentFile = ""
-            }
+            BEGIN { currentFile = "" }
             /^[^[:space:]]/ {
               if (currentFile != "") print ""
               currentFile = $0
@@ -70,7 +81,6 @@ jobs:
             }
           ' "$FORMATTED_LOG" > "$COMMENT_LOG"
 
-          # Export the full report
           if [[ -s "$COMMENT_LOG" ]]; then
             echo 'report<<EOF' >> "$GITHUB_OUTPUT"
             cat "$COMMENT_LOG" >> "$GITHUB_OUTPUT"
