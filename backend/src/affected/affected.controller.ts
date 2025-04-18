@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { AffectedService } from './affected.service';
 import { AffectedDto } from './affected.dto';
+
 @Controller('affected')
 export class AffectedController {
   constructor(private readonly affectedService: AffectedService) {}
