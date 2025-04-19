@@ -31,6 +31,8 @@ jobs:
           npx eslint --version
           npx tsc --version
           npx eslint --print-config .eslintrc.js
+          pwd
+          ls -la
 
       # ─────────  Lint & capture output  ─────────
       - name: Detect and lint changed controller/DTO files
