@@ -8,6 +8,7 @@ import {
 import { AffectedService } from './affected.service';
 import { AffectedDto } from './affected.dto';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+
 @Controller('affected')
 @ApiTags('Affected')
 export class AffectedController {
