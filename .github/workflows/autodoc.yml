@@ -30,10 +30,10 @@ jobs:
           npm --version
           npx eslint --version
           npx tsc --version
-          npx eslint --print-config .eslintrc.js
           pwd
           ls -la
           npx eslint --print-config ./src/audit/audit.controller.ts
+          cat tsconfig.json
 
       # ─────────  Lint & capture output  ─────────
       - name: Detect and lint changed controller/DTO files
