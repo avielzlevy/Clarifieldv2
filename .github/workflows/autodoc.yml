@@ -32,7 +32,6 @@ jobs:
           npx tsc --version
           pwd
           ls -la
-          npx eslint --print-config ./src/audit/audit.controller.ts
           cat tsconfig.json
 
       # ─────────  Lint & capture output  ─────────
