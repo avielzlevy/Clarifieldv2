@@ -64,7 +64,7 @@ jobs:
           echo "$CHANGED_FILES"
 
           # Run ESLint
-          npx eslint $CHANGED_FILES --max-warnings=0 > "$ESLINT_LOG"
+          npx eslint --config eslint.config.mjs $CHANGED_FILES --max-warnings=0 > "$ESLINT_LOG"
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
           # Clean up output

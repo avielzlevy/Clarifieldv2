@@ -2,6 +2,7 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuditLogsService } from './audit.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 @UseGuards(JwtAuthGuard)
 @Controller('logs')
 @ApiTags('Audit Logs')
