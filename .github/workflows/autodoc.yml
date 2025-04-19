@@ -33,6 +33,8 @@ jobs:
           npx eslint --print-config .eslintrc.js
           pwd
           ls -la
+          npx eslint ./src/audit/audit.controller.ts
+          npx eslint --print-config ./src/audit/audit.controller.ts
 
       # ─────────  Lint & capture output  ─────────
       - name: Detect and lint changed controller/DTO files
