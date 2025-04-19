@@ -1,0 +1,115 @@
+name: Commit Backend ESLint (controllers & DTOs)
+
+on:
+  pull_request:
+    paths:
+      - 'backend/src/**/*.controller.ts'
+      - 'backend/src/**/*.dto.ts'
+
+permissions:
+  contents: read
+  pull-requests: write           # needed to post the comment
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+
+      - name: Install deps
+        run: |
+          npm ci --ignore-scripts
+          npx prisma generate
+
+      # ─────────  Lint & capture output  ─────────
+      - name: Detect and lint changed controller/DTO files
+        id: eslint
+        shell: bash
+        run: |
+          set +e
+
+          ESLINT_LOG="../eslint-raw.txt"
+          FORMATTED_LOG="../eslint-pretty.txt"
+          COMMENT_LOG="../eslint-comment.txt"
+
+          # Fetch full Git history and base branch
+          git fetch origin ${{ github.base_ref }}
+
+          # Get only changed DTO/controller files and adjust path for working dir
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD \
+            | grep -E '\.controller\.ts$|\.dto\.ts$' \
+            | sed 's|^backend/||' || true)
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No relevant files changed."
+            echo "exit_code=0" >> "$GITHUB_OUTPUT"
+            echo "error_count=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Linting these files:"
+          echo "$CHANGED_FILES"
+
+          # Run ESLint
+          npx eslint --config eslint.config.mjs $CHANGED_FILES --max-warnings=0 > "$ESLINT_LOG"
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+          # Clean up output
+          grep -vE '^\s*$|✖ [0-9]+ problems' "$ESLINT_LOG" \
+            | sed 's|/home/runner/work/Clarifieldv2/Clarifieldv2/backend/|./|' \
+            > "$FORMATTED_LOG"
+
+          ERROR_COUNT=$(grep -c 'error' "$FORMATTED_LOG" || true)
+          echo "error_count=$ERROR_COUNT" >> "$GITHUB_OUTPUT"
+
+          # Format for comment
+          awk '
+            BEGIN { currentFile = "" }
+            /^[^[:space:]]/ {
+              if (currentFile != "") print ""
+              currentFile = $0
+              print "### 📄 **" currentFile "**\n"
+            }
+            /^[[:space:]]+[0-9]+:/ {
+              gsub(/^[[:space:]]+/, "", $0)
+              split($0, parts, /[[:space:]]+/)
+              line = parts[1]
+              msg = substr($0, index($0,$4))
+              rule = parts[length(parts)]
+              msgWithoutRule = substr(msg, 1, length(msg) - length(rule) - 1)
+              print "- **Line " line "** — `" msgWithoutRule "`"
+            }
+          ' "$FORMATTED_LOG" > "$COMMENT_LOG"
+
+          if [[ -s "$COMMENT_LOG" ]]; then
+            echo 'report<<EOF' >> "$GITHUB_OUTPUT"
+            cat "$COMMENT_LOG" >> "$GITHUB_OUTPUT"
+            echo 'EOF' >> "$GITHUB_OUTPUT"
+          fi
+
+
+
+      # ─────────  Post (or update) a single comment  ─────────
+      - name: PR summary comment
+        if: steps.eslint.outputs.report != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## 🚨 ${{ steps.eslint.outputs.error_count }} ESLint errors in DTO & Controller files
+      
+            ${{ steps.eslint.outputs.report }}
+      
+          edit-mode: replace
+    
+
+      # ─────────  Fail the job when ESLint found errors  ─────────
+      - name: Fail if ESLint errored
+        if: steps.eslint.outputs.exit_code != '0'
+        run: exit 1
