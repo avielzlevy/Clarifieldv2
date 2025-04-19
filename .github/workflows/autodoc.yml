@@ -26,13 +26,7 @@ jobs:
       - name: Install deps
         run: |
           npm ci --ignore-scripts
-          node --version
-          npm --version
-          npx eslint --version
-          npx tsc --version
-          pwd
-          ls -la
-          cat tsconfig.json
+          npx prisma generate
 
       # ─────────  Lint & capture output  ─────────
       - name: Detect and lint changed controller/DTO files
