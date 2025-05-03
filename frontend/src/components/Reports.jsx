@@ -75,7 +75,7 @@ const ReportCard = React.memo(({ report, isExpanded, onToggleExpand, theme, t, r
   // Handle report status update
   const updateReportStatus = debounce(async (report, desc, newStatus, refreshReports) => {
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/api/report/${report.name}`, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/reports/${report.name}`, {
         type: report.category,
         name: report.name,
         description: desc.description,

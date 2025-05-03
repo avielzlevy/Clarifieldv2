@@ -48,7 +48,7 @@ const ReportDialog = ({ open, onClose, reportedItem }) => {
   const submitReport = useCallback(async () => {
     try {
       await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/report/${reportData.name}`,
+        `${process.env.REACT_APP_API_URL}/api/reports/${reportData.name}`,
         {
           type: reportData.type,
           description: reportData.description.trim(),
