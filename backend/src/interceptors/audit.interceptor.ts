@@ -23,6 +23,9 @@ export class AuditLoggerInterceptor implements NestInterceptor {
         const request = context.switchToHttp().getRequest<Request>();
         const response = context.switchToHttp().getResponse<Response>();
         const method: string = request.method;
+        if (['GET', 'OPTIONS', 'HEAD'].includes(method)) {
+          return;
+        }
         const path: string = request.originalUrl;
         const status: number = response.statusCode;
 
@@ -35,6 +38,9 @@ export class AuditLoggerInterceptor implements NestInterceptor {
           ip = forwardedFor[0].trim();
         } else {
           ip = request.ip || 'Unknown';
+        }
+        if (ip?.startsWith('::ffff:')) {
+          ip = ip.replace('::ffff:', '');
         }
 
         // Insert the audit log record into PostgreSQL via Prisma.

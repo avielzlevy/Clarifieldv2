@@ -53,7 +53,7 @@ function Validation() {
       const response = await validateJSON(value);
       if (response && response.data) {
         // Assume response.data is an array of violations when invalid
-        setValidationResult({ isValid: false, violations: response.data });
+        setValidationResult({ isValid: false, violations: response.data.errors || [] });
       } else {
         setValidationResult({ isValid: true });
       }
@@ -231,8 +231,8 @@ function Validation() {
                               style={{
                                 height: 20,
                                 width: 20,
-                                minWidth:20,
-                                minHeight:20,
+                                minWidth: 20,
+                                minHeight: 20,
                                 color: '#EF4444',
                                 marginRight: 8,
                                 marginTop: 0,

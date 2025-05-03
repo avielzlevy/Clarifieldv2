@@ -21,7 +21,7 @@ const NoData = ({ type = 'items' }) => {
       }}
     >
       <FileQuestion size={40} color={theme.palette.text.secondary} />
-      <Typography variant="h6">{t(`home.${type}_empty`, `No ${type} found`)}</Typography>
+      <Typography variant="h6">{t(`home.${type}_empty`, `No ${type}`)} found</Typography>
     </Box>
   );
 };
