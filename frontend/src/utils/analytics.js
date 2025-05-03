@@ -3,7 +3,7 @@ export const sendAnalytics = async (name, type, amount) => {
     if(name.includes('^')){
         return
     }
-    const analyticsResponse = await axios.post(`${process.env.REACT_APP_API_URL}/api/analytic`, {
+    const analyticsResponse = await axios.post(`${process.env.REACT_APP_API_URL}/api/analytics`, {
         name,
         type,
         amount
