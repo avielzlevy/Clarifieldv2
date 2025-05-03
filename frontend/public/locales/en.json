@@ -4,6 +4,7 @@
         "page_not_found": "Page not found",
         "viewer": "Viewer",
         "admin": "Admin",
+        "home": "Dashboard",
         "entities": "Entities",
         "definitions": "Definitions",
         "formats": "Formats",
@@ -12,7 +13,7 @@
         "analytics": "Analytics",
         "logs": "Logs",
         "problems": "Problems",
-        "problem_need": "problems need",
+        "problem_need":"problems need",
         "attention": "attention",
         "review_and_update": "Review and update your definitions, formats, and entity references to resolve these issues.",
         "search": "Search"
@@ -23,7 +24,6 @@
         "entity": "Entity",
         "loading": "Loading...",
         "new": "New",
-        "added": "Added",
         "create": "Create",
         "created": "Created",
         "createing": "Creating",
@@ -33,6 +33,7 @@
         "delete": "Delete",
         "deleted": "Deleted",
         "deleteing": "Deleting",
+        "failed": "Failed",
         "updated": "Updated",
         "save": "Save",
         "copy": "Copy",
@@ -60,10 +61,13 @@
         "successfully": "successfully",
         "delete_confirmation": "Delete Confirmation",
         "delete_sure": "Are you sure you want to delete: ",
+        "sure": "Are you sure?",
         "reporting": "Reporting",
         "report": "Report",
         "actions": "Actions",
-        "filter": "Filter"
+        "filter": "Filter",
+        "change_warning_1": "CAUTION: Changes to this item will",
+        "change_warning_2": " the following items:\n"
     },
     "home": {
         "error_fetching_items": "Error fetching items",
@@ -79,6 +83,7 @@
         "error_fetching_reports": "Error fetching reports",
         "report_updated": "Report updated",
         "error_updating_report": "Error updating report",
+        "reports_empty": "No reports",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "pending": "Pending"
@@ -110,51 +115,51 @@
         "report_submit": "Submit a Report",
         "provide_description": " Please provide a brief description of the issue"
     },
-    "formats": {
+    "formats":{
         "fill_all_fields": "Please fill out the details below to",
-        "pattern_must": "The pattern must be a valid regular expression enclosed with ^ and $",
-        "pattern": "Pattern",
-        "open_regex_builder": "Open Regex Builder",
-        "regex_builder": "Regex Builder",
-        "presets": "Presets",
-        "min": "Min",
-        "max": "Max",
-        "digits": "Digits",
-        "uppercase": "Uppercase",
-        "lowercase": "Lowercase",
-        "whitespace": "Whitespace",
-        "specialChars": "Special Characters",
+        "pattern_must":"The pattern must be a valid regular expression enclosed with ^ and $",
+        "pattern":"Pattern",
+        "open_regex_builder":"Open Regex Builder",
+        "regex_builder":"Regex Builder",
+        "presets":"Presets",
+        "min":"Min",
+        "max":"Max",
+        "digits":"Digits",
+        "uppercase":"Uppercase",
+        "lowercase":"Lowercase",
+        "whitespace":"Whitespace",
+        "specialChars":"Special Characters",
         "hebrewLetters": "Hebrew Letters",
-        "currentRegex": "Current Regex",
-        "random": "Random",
-        "no_examples": "No examples available",
-        "use_regex": "Use Regex"
+        "currentRegex":"Current Regex",
+        "random":"Random",
+        "no_examples":"No examples available",
+        "use_regex":"Use Regex"
     },
-    "logs": {
-        "timestamp": "Timestamp",
-        "ip_address": "IP Address",
-        "method": "Method",
-        "url": "URL",
-        "status": "Status",
-        "response_time": "Duration",
-        "error_fetching_logs": "Error fetching logs"
+    "logs":{
+        "timestamp":"Timestamp",
+        "ip_address":"IP Address",
+        "method":"Method",
+        "url":"URL",
+        "status":"Status",
+        "response_time":"Duration",
+        "error_fetching_logs":"Error fetching logs"
     },
-    "settings": {
-        "settings": "Settings",
-        "naming_conventions": "Naming Conventions",
-        "fetch_failed": "Failed to fetch settings",
-        "update_failed": "Failed to update settings",
-        "updated": "Settings updated successfully"
+    "settings":{
+        "settings":"Settings",
+        "naming_conventions":"Naming Conventions",
+        "fetch_failed":"Failed to fetch settings",
+        "update_failed":"Failed to update settings",
+        "updated":"Settings updated successfully"
     },
-    "validation": {
-        "results": "Validation Results",
-        "validating_json": "Validating JSON...",
-        "valid": "Valid",
-        "invalid": "invalid",
-        "meet_requirements": "The JSON is valid and meets all schema requirements",
-        "does_not_meet": "The JSON contains errors or does not meet schema requirements.",
-        "validations_issues": "Validation Issues",
-        "schema_validation": "Schema Validation",
-        "schema_valid": "All schema requirements have been met. The JSON structure is valid and can be used in your application"
+    "validation":{
+        "results":"Validation Results",
+        "validating_json":"Validating JSON...",
+        "valid":"Valid",
+        "invalid":"invalid",
+        "meet_requirements":"The JSON is valid and meets all schema requirements",
+        "does_not_meet":"The JSON contains errors or does not meet schema requirements.",
+        "validations_issues":"Validation Issues",
+        "schema_validation":"Schema Validation",
+        "schema_valid":"All schema requirements have been met. The JSON structure is valid and can be used in your application"
     }
 }
