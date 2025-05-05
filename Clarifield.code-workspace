@@ -2,7 +2,7 @@
   "folders": [
     {
       "path": "."
-    },
+    }
   ],
   "settings": {
     "todo-tree.tree.showCountsInTree": true,
@@ -15,19 +15,20 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Frontend", // Change this
+        "label": "Frontend",
         "type": "shell",
         "icon": { "id": "home", "color": "terminal.ansiBlue" },
         "isBackground": true,
         "options": {
-          "cwd": "${workspaceFolder}/client" // Change just the folder name
+          "cwd": "${workspaceFolder}/frontend"
         },
         "runOptions": { "runOn": "folderOpen" },
-        "command": "cmd", // <-- your shell here
+        "command": "cmd",
         "presentation": {
-          "echo": false, // silence "Executing task ..."
+          "echo": false,
           "focus": true,
-          "panel": "dedicated"
+          "panel": "dedicated",
+          "group": "dev"
         }
       },
       {
@@ -36,19 +37,20 @@
         "icon": { "id": "flame", "color": "terminal.ansiRed" },
         "isBackground": true,
         "options": {
-          "cwd": "${workspaceFolder}/server"
+          "cwd": "${workspaceFolder}/backend"
         },
         "runOptions": { "runOn": "folderOpen" },
-        "command": "cmd", // <-- your shell here
+        "command": "cmd",
         "presentation": {
-          "echo": false, // silence "Executing task ..."
+          "echo": false,
           "focus": true,
-          "panel": "dedicated"
+          "panel": "dedicated",
+          "group": "dev"
         }
       },
       {
         "label": "Open",
-        "dependsOn": ["Frontend", "Backend"], // Make sure these match your above task labels
+        "dependsOn": ["Frontend", "Backend"],
         "runOptions": { "runOn": "folderOpen" }
       }
     ]
