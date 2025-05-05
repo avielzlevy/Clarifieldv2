@@ -92,7 +92,7 @@ const ChangeLog = ({ activeFilters }) => {
 
   const renderChangeLogList = () => {
     if (!combinedLogs.length) {
-      return <NoData  type="recent" />;
+      return <NoData type="popular" />;
     }
 
     return (

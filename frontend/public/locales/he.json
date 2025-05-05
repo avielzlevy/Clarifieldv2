@@ -105,7 +105,7 @@
     "definitions": {
         "deleted_definition": "ההגדרה נמחקה בהצלחה",
         "error_deleting_definition": "שגיאה במחיקת ההגדרה",
-        "error_fetching_naming_convention": "שגיאה בטעינת מוסכמת השמות",
+        "error_fetching_naming_convention": "שגיאה בטעינת קונבנציית השמות",
         "bad_naming_convention": "השם חייב להיות לפי",
         "definition_already_exists": "ההגדרה כבר קיימת",
         "fill_all_fields_1": "אנא מלא את הפרטים הבאים כדי",
@@ -146,7 +146,7 @@
     },
     "settings": {
         "settings": "הגדרות",
-        "naming_conventions": "מוסכמות שמות",
+        "naming_conventions": "קונבנציית שמות",
         "fetch_failed": "הטעינה נכשלה",
         "update_failed": "העדכון נכשל",
         "updated": "ההגדרות עודכנו בהצלחה"

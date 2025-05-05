@@ -4,7 +4,7 @@ import { FileQuestion } from 'lucide-react'; // or any relevant icon
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
-const NoData = ({ type = 'items' }) => {
+const NoData = ({ type }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -21,7 +21,7 @@ const NoData = ({ type = 'items' }) => {
       }}
     >
       <FileQuestion size={40} color={theme.palette.text.secondary} />
-      <Typography variant="h6">{t(`home.${type}_empty`, `No ${type}`)} found</Typography>
+      <Typography variant="h6">{t(`home.${type}_empty`, `No ${type}`)}</Typography>
     </Box>
   );
 };

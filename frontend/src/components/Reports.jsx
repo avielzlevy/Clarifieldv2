@@ -219,30 +219,35 @@ const Reports = ({ activeFilters }) => {
   }, [combinedReports, activeFilters]);
 
   if (loadingReports) return <Loading />;
+  if (!filteredReports.length)
+    return (
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+          {t("home.reports")}
+        </Typography>
+        <NoData type="reports" />
 
+      </Box>)
   return (
     <Box sx={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
     }}>
-      <Typography variant="h5" fontWeight={600} sx={{ mb: 2 }}>
+      <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
         {t("home.reports")}
       </Typography>
-      {filteredReports.length > 0 ? (
-        filteredReports.map((report) => (
-          <ReportCard
-            key={report.name}
-            report={report}
-            isExpanded={expanded[report.name]}
-            onToggleExpand={() => dispatch(report.name)}
-            theme={theme}
-            t={t}
-            refreshReports={fetchReports}
-          />
-        ))
-      ) : (
-        <NoData type="reports" />
+      {filteredReports.map((report) => (
+        <ReportCard
+          key={report.name}
+          report={report}
+          isExpanded={expanded[report.name]}
+          onToggleExpand={() => dispatch(report.name)}
+          theme={theme}
+          t={t}
+          refreshReports={fetchReports}
+        />
+      )
       )}
 
     </Box>);
