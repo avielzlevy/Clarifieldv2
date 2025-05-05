@@ -155,7 +155,7 @@
         "results":"Validation Results",
         "validating_json":"Validating JSON...",
         "valid":"Valid",
-        "invalid":"invalid",
+        "invalid":"Invalid",
         "meet_requirements":"The JSON is valid and meets all schema requirements",
         "does_not_meet":"The JSON contains errors or does not meet schema requirements.",
         "validations_issues":"Validation Issues",

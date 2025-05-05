@@ -90,7 +90,6 @@ const QuickAccess = ({ activeFilters }) => {
         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
           {t("home.popular")}
         </Typography>
-        <Divider sx={{ mb: 2, width: "100%" }} />
         <NoData type="" />
       </Box>
     );

@@ -1,68 +1,128 @@
 import { Injectable } from '@nestjs/common';
 import { DefinitionsService } from '../definitions/definitions.service';
 import { FormatsService } from '../formats/formats.service';
+import { EntitiesService } from '../entities/entities.service';
+import { EntityData } from '../entities/entities.types';
 
 @Injectable()
 export class ValidateService {
   constructor(
     private readonly definitionsService: DefinitionsService,
     private readonly formatsService: FormatsService,
+    private readonly entitiesService: EntitiesService,
   ) {}
 
   /**
-   * Validates the provided data recursively against the definitions and formats.
-   * Returns an array of error messages if any validations fail.
+   * Validates the provided data recursively against definitions, formats, and entities.
+   * Returns an array of error messages for any validation failures.
    */
   async validateData(data: any): Promise<string[]> {
-    // Retrieve definitions and formats from the database (merged with any static formats in the FormatsService)
-    const definitions = await this.definitionsService.getDefinitions();
-    const formats = await this.formatsService.getFormats();
+    const [definitions, formats, entities] = await Promise.all([
+      this.definitionsService.getDefinitions(),
+      this.formatsService.getFormats(),
+      this.entitiesService.getEntities(),
+    ]);
+
     const errors: string[] = [];
 
-    this.validateObject(data, definitions, formats, errors);
+    if (data && typeof data === 'object') {
+      for (const key of Object.keys(data)) {
+        this.validateNode(
+          key,
+          (data as Record<string, unknown>)[key],
+          definitions,
+          formats,
+          entities,
+          errors,
+        );
+      }
+    } else {
+      errors.push('Root value must be an object');
+    }
+
     return errors;
   }
 
-  private validateObject(
-    obj: unknown,
-    definitions: Record<
-      string,
-      { format: string; description?: string | null }
-    >,
-    formats: Record<string, { pattern: string; description?: string | null }>,
+  private validateNode(
+    key: string,
+    value: unknown,
+    definitions: Record<string, { format: string }>,
+    formats: Record<string, { pattern: string }>,
+    entities: Record<string, EntityData>,
     errors: string[],
     path: string = '',
   ): void {
-    if (obj === null || typeof obj !== 'object') return;
-    const record = obj as Record<string, unknown>;
-    for (const key of Object.keys(record)) {
-      const currentPath = path ? `${path}.${key}` : key;
-      if (!(key in definitions)) {
-        errors.push(`Key "${currentPath}" is not defined in the policy`);
-        continue;
-      }
+    const currentPath = path ? `${path}.${key}` : key;
 
-      const definition = definitions[key];
-      const format = formats[definition.format];
-      if (!format) {
+    // 1) Definition: validate primitive against regex
+    if (definitions[key]) {
+      const def = definitions[key];
+      const fmt = formats[def.format];
+      if (!fmt) {
         errors.push(
-          `Definition for "${currentPath}" references unknown format "${definition.format}"`,
+          `Definition "${currentPath}" references unknown format "${def.format}"`,
         );
-        continue;
+        return;
       }
-
-      const value = record[key];
-      if (value !== null && typeof value === 'object') {
-        this.validateObject(value, definitions, formats, errors, currentPath);
+      let strVal: string;
+      if (typeof value === 'string') {
+        strVal = value;
+      } else if (typeof value === 'number' || typeof value === 'boolean') {
+        strVal = value.toString();
       } else {
-        const regex = new RegExp(format.pattern);
-        // Convert value explicitly to string to satisfy template literal restrictions.
-        if (!regex.test(String(value))) {
-          errors.push(
-            `Invalid value ${String(value)} for "${currentPath}": does not match the pattern "${format.pattern}"`,
+        errors.push(
+          `"${currentPath}" should be a primitive matching format "${def.format}"`,
+        );
+        return;
+      }
+      if (!new RegExp(fmt.pattern).test(strVal)) {
+        errors.push(
+          `Invalid value "${strVal}" for "${currentPath}": does not match pattern ${fmt.pattern}`,
+        );
+      }
+      return;
+    }
+
+    // 2) Entity: validate object against its fields (allow omissions)
+    if (entities[key]) {
+      if (value === null || typeof value !== 'object') {
+        errors.push(
+          `"${currentPath}" should be an object matching entity "${key}"`,
+        );
+        return;
+      }
+      const record = value as Record<string, unknown>;
+      const entity = entities[key];
+      const seen = new Set<string>();
+
+      // Only validate provided fields; omissions allowed
+      for (const field of entity.fields) {
+        seen.add(field.label);
+        if (field.label in record) {
+          this.validateNode(
+            field.label,
+            record[field.label],
+            definitions,
+            formats,
+            entities,
+            errors,
+            currentPath,
           );
         }
       }
+
+      // Flag any additional (unexpected) properties
+      for (const prop of Object.keys(record)) {
+        if (!seen.has(prop)) {
+          errors.push(`Unexpected field "${prop}" in entity "${currentPath}"`);
+        }
+      }
+      return;
     }
+
+    // 3) Neither definition nor entity
+    errors.push(
+      `Key "${currentPath}" is not defined as a definition or entity"`,
+    );
   }
 }

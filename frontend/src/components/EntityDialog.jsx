@@ -74,7 +74,7 @@ function EntityDialog({
       switch (mode) {
         case 'edit':
           response = await axios.put(
-            `${process.env.REACT_APP_API_URL}/api/entity/${selectedNode.label}`,
+            `${process.env.REACT_APP_API_URL}/api/entities/${selectedNode.label}`,
             selectedNode,
             { headers }
           );
@@ -94,7 +94,7 @@ function EntityDialog({
           break;
 
         case 'report':
-          response = await axios.post(`${process.env.REACT_APP_API_URL}/api/report/${selectedNode.label}`, report, { headers });
+          response = await axios.post(`${process.env.REACT_APP_API_URL}/api/reports/${selectedNode.label}`, report, { headers });
           break;
 
         default:

@@ -3,8 +3,8 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { DefinitionsService } from '../definitions/definitions.service';
-import { EntitiesService } from '../entities/entities.service';
+import { DefinitionsService } from '../../definitions/definitions.service';
+import { EntitiesService } from '../../entities/entities.service';
 
 type UsagesMap = Record<string, string[]>;
 
@@ -48,40 +48,40 @@ export class AffectedService {
         usages['definitions'] = matchedDefs;
       }
       // Next: definitions → entities
-      const ents = await this.entitiesService.getEntities();
-      const matchedEnts: string[] = [];
+      const entities = await this.entitiesService.getEntities();
+      const matchedEntities: string[] = [];
       for (const defName of matchedDefs) {
-        for (const [entityName, ent] of Object.entries(ents)) {
+        for (const [entityName, ent] of Object.entries(entities)) {
           if (ent.fields.some((f) => f.label === defName)) {
-            matchedEnts.push(entityName);
+            matchedEntities.push(entityName);
           }
         }
       }
-      if (matchedEnts.length) {
-        usages['entities'] = Array.from(new Set(matchedEnts));
+      if (matchedEntities.length) {
+        usages['entities'] = Array.from(new Set(matchedEntities));
       }
     }
     // 2) If definition → find entities that use it
     else if (definition) {
-      const ents = await this.entitiesService.getEntities();
-      const matchedEnts = Object.entries(ents)
+      const entities = await this.entitiesService.getEntities();
+      const matchedEntities = Object.entries(entities)
         .filter(([, ent]) => ent.fields.some((f) => f.label === initial))
         .map(([name]) => name);
-      if (matchedEnts.length) {
-        usages['entities'] = matchedEnts;
+      if (matchedEntities.length) {
+        usages['entities'] = matchedEntities;
       }
     }
     // 3) If entity → find entities that use it (including itself)
     else {
-      const ents = await this.entitiesService.getEntities();
-      const matchedEnts = Object.entries(ents)
+      const entities = await this.entitiesService.getEntities();
+      const matchedEntities = Object.entries(entities)
         .filter(
           ([name, ent]) =>
             name === initial || ent.fields.some((f) => f.label === initial),
         )
         .map(([name]) => name);
-      if (matchedEnts.length) {
-        usages['entities'] = matchedEnts;
+      if (matchedEntities.length) {
+        usages['entities'] = matchedEntities;
       }
     }
 

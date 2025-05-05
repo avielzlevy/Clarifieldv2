@@ -25,7 +25,7 @@ import {
   ChartNoAxesColumn,
   Logs as LogsIcon,
   User as PersonIcon,
-  UserCog as EnginnerIcon,
+  UserCog as EngineerIcon,
   SquareArrowUp,
 } from 'lucide-react';
 import ThemeButton from './ThemeSwitch';
@@ -191,7 +191,7 @@ function NavBar({ theme, setTheme }) {
             <Problems />
             <Tooltip title={username === 'Viewer' || username === '' ? t('navbar.viewer') : t('navbar.admin')}>
               <IconButton color="inherit" onClick={handleChangeUser}>
-                {auth ? <EnginnerIcon /> : <PersonIcon />}
+                {auth ? <EngineerIcon /> : <PersonIcon />}
               </IconButton>
             </Tooltip>
             <LangDropdown />

@@ -18,6 +18,7 @@ import { Boxes, FileJson, Book } from "lucide-react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import Loading from "./Loading";
+import NoData from "./noData";
 
 const ChangeLog = ({ activeFilters }) => {
   const [changeData, setChangeData] = useState({ formats: [], definitions: [], entities: [] });
@@ -91,7 +92,7 @@ const ChangeLog = ({ activeFilters }) => {
 
   const renderChangeLogList = () => {
     if (!combinedLogs.length) {
-      return <Typography>{t("home.recent_empty")}</Typography>;
+      return <NoData  type="recent" />;
     }
 
     return (
