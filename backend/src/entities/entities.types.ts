@@ -5,6 +5,5 @@ export interface Field {
 }
 
 export interface EntityData {
-  label: string;
   fields: Field[];
 }

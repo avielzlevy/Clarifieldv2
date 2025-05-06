@@ -44,13 +44,17 @@ export class SettingsService {
     const { namingConvention } = updateDto;
     // Update the settings record.
     const currentSettings = await this.getSettings();
-    const updatedSettings = await this.prisma.setting.update({
+    const updatedSettings = {
+      ...currentSettings,
+      namingConvention,
+    };
+    // Apply changes to definitions, entities, and analytics.
+    await this.applySettings(updatedSettings);
+    const updateSettings = await this.prisma.setting.update({
       where: { id: currentSettings.id },
       data: { namingConvention },
     });
-    // Apply changes to definitions, entities, and analytics.
-    await this.applySettings(updatedSettings);
-    return updatedSettings;
+    return updateSettings;
   }
 
   /**
@@ -63,104 +67,66 @@ export class SettingsService {
   private async applySettings(settings: {
     namingConvention: string;
   }): Promise<void> {
-    // Fetch current records.
-    const definitions = await this.definitionsService.getDefinitions(); // Record keyed by definition name
-    const entities = await this.entitiesService.getEntities(); // Record keyed by entity label
-    const analytics = await this.analyticsService.getAnalytics(); // Nested map: { [type]: { [name]: number } }
+    const definitions = await this.definitionsService.getDefinitions();
+    const entities = await this.entitiesService.getEntities();
+    const analytics = await this.analyticsService.getAnalytics();
 
-    // Loop through definitions and update their keys if needed.
-    for (const originalName of Object.keys(definitions)) {
-      let transformedName: string;
+    // helper to pick the right converter
+    const convert = (name: string) => {
       switch (settings.namingConvention) {
         case 'camelCase':
-          transformedName = toCamelCase(originalName);
-          break;
+          return toCamelCase(name);
         case 'PascalCase':
-          transformedName = toPascalCase(originalName);
-          break;
+          return toPascalCase(name);
         case 'kebab-case':
-          transformedName = toKebabCase(originalName);
-          break;
+          return toKebabCase(name);
         case 'snake_case':
         default:
-          transformedName = toSnakeCase(originalName);
-          break;
+          return toSnakeCase(name);
       }
-      if (transformedName !== originalName) {
-        // This helper should update the definition’s primary key (name) in the DB.
-        await this.definitionsService.renameDefinition(
-          originalName,
-          transformedName,
-        );
+    };
+
+    // 1. rename definitions as before…
+    for (const origDef of Object.keys(definitions)) {
+      const newDef = convert(origDef);
+      if (newDef !== origDef) {
+        await this.definitionsService.renameDefinition(origDef, newDef);
       }
     }
-    // Loop through each entity and update its fields only.
-    for (const entityKey of Object.keys(entities)) {
-      // entityKey remains unchanged; only fields are modified.
-      const entity = entities[entityKey];
 
-      // Map the fields array, transforming each field's label.
+    // 2. **Entities: first update fields (using original labels)**
+    const originalEntityKeys = Object.keys(entities);
+    for (const origEntityKey of originalEntityKeys) {
+      const entity = entities[origEntityKey];
       const transformedFields = entity.fields.map((field) => {
-        // Only transform if field.label is a string.
-        if (typeof field.label === 'string') {
-          let newLabel: string;
-          switch (settings.namingConvention) {
-            case 'camelCase':
-              newLabel = toCamelCase(field.label);
-              break;
-            case 'PascalCase':
-              newLabel = toPascalCase(field.label);
-              break;
-            case 'kebab-case':
-              newLabel = toKebabCase(field.label);
-              break;
-            case 'snake_case':
-            default:
-              newLabel = toSnakeCase(field.label);
-              break;
-          }
-          // Return a new field with the updated label.
-          return { ...field, label: newLabel };
-        }
-        return field;
+        if (typeof field.label !== 'string') return field;
+        const newLabel = convert(field.label);
+        return newLabel === field.label ? field : { ...field, label: newLabel };
       });
-
-      // If the transformed fields differ, update the entity's fields.
-      // (Implement updateEntityFields to update only the fields, not the entity label.)
       await this.entitiesService.updateEntityFields(
-        entityKey,
+        origEntityKey,
         transformedFields,
       );
     }
 
-    // For analytics of type "definition", update the inner keys.
-    const analyticsDefinition = analytics['definition'];
-    if (analyticsDefinition) {
-      for (const originalName of Object.keys(analyticsDefinition)) {
-        let transformedName: string;
-        switch (settings.namingConvention) {
-          case 'camelCase':
-            transformedName = toCamelCase(originalName);
-            break;
-          case 'PascalCase':
-            transformedName = toPascalCase(originalName);
-            break;
-          case 'kebab-case':
-            transformedName = toKebabCase(originalName);
-            break;
-          case 'snake_case':
-          default:
-            transformedName = toSnakeCase(originalName);
-            break;
-        }
-        if (transformedName !== originalName) {
-          // This helper should update the analytic record where type = 'definition'
-          await this.analyticsService.renameAnalytic(
-            'definition',
-            originalName,
-            transformedName,
-          );
-        }
+    // 3. **Then rename each entity label**
+    for (const origEntityKey of originalEntityKeys) {
+      const newEntityKey = convert(origEntityKey);
+      if (newEntityKey !== origEntityKey) {
+        await this.entitiesService.renameEntity(origEntityKey, newEntityKey);
+      }
+    }
+
+    // 4. analytics renaming as before…
+    const defAnalytics = analytics['definition'] || {};
+    for (const origName of Object.keys(defAnalytics)) {
+      const newName = convert(origName);
+      if (newName !== origName) {
+        await this.analyticsService.renameAnalytic(
+          'definition',
+          origName,
+          newName,
+        );
       }
     }
   }

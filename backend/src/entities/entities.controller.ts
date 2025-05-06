@@ -88,8 +88,8 @@ export class EntitiesController {
   @ApiProduces('application/json')
   async addEntity(@Body() body: CreateEntityDto) {
     const { label, fields } = body;
-    await this.entitiesService.addEntity(label, { label, fields });
-    return { label, fields };
+    await this.entitiesService.addEntity(label, { fields });
+    return { fields };
   }
 
   @Put(':name')
@@ -114,7 +114,6 @@ export class EntitiesController {
     const { name } = params;
     const { fields } = body;
     await this.entitiesService.updateEntity(name, {
-      label: name,
       fields: fields,
     });
     return { label: name, fields: body.fields };

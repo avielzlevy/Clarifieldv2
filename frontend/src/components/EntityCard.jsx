@@ -24,11 +24,6 @@ const EntityCard = ({ data }) => {
 
   const ICON_SIZE = useMemo(() => ({ width: 10, height: 10 }), []);
 
-  const capitalizedLabel = useMemo(
-    () => entityLabel.charAt(0).toUpperCase() + entityLabel.slice(1),
-    [entityLabel]
-  );
-
   const handleEntityClick = useCallback(
     (label) => {
       if (data.onEntityClick) data.onEntityClick(label);
@@ -133,7 +128,7 @@ const EntityCard = ({ data }) => {
                 width: '100%',  
               }}
             >
-              {capitalizedLabel}
+              {entityLabel}
             </ListSubheader>
           }
         >

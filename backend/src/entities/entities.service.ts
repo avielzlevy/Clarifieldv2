@@ -27,7 +27,6 @@ export class EntitiesService {
       const result: Record<string, EntityData> = {};
       for (const entity of entities) {
         result[entity.label] = {
-          label: entity.label,
           fields: entity.fields as unknown as Field[],
         };
       }
@@ -44,7 +43,6 @@ export class EntitiesService {
       const entity = await this.prisma.entity.findUnique({ where: { label } });
       if (!entity) throw new NotFoundException('Entity not found');
       return {
-        label: entity.label,
         fields: entity.fields as unknown as Field[],
       };
     } catch (error) {
@@ -100,7 +98,7 @@ export class EntitiesService {
         name: label,
         timestamp: new Date().toISOString(),
         before: '',
-        after: { label, fields: data.fields },
+        after: { fields: data.fields },
       });
     } catch (error) {
       if (error instanceof HttpException) throw error;
@@ -145,7 +143,6 @@ export class EntitiesService {
       await this.prisma.entity.update({
         where: { label },
         data: {
-          label: data.label,
           fields: data.fields as unknown as Prisma.JsonArray,
         },
       });
@@ -155,7 +152,7 @@ export class EntitiesService {
         name: label,
         timestamp: new Date().toISOString(),
         before: existing,
-        after: { label: data.label, fields: data.fields },
+        after: { fields: data.fields },
       });
     } catch (error) {
       if (error instanceof HttpException) throw error;
@@ -207,6 +204,38 @@ export class EntitiesService {
     } catch (error) {
       console.error('Error updating entity fields:', error);
       throw new InternalServerErrorException('Failed to update entity fields');
+    }
+  }
+  async renameEntity(originalLabel: string, newLabel: string): Promise<void> {
+    try {
+      // 1. Make sure the new label isn’t already taken
+      const already = await this.prisma.entity.findUnique({
+        where: { label: newLabel },
+      });
+      if (already) {
+        throw new ConflictException(
+          `Entity with label "${newLabel}" already exists`,
+        );
+      }
+
+      // 2. Perform the update
+      await this.prisma.entity.update({
+        where: { label: originalLabel },
+        data: { label: newLabel },
+      });
+
+      // 3. Record the change
+      await this.changesService.addChange({
+        type: 'entities',
+        name: originalLabel,
+        timestamp: new Date().toISOString(),
+        before: { label: originalLabel },
+        after: { label: newLabel },
+      });
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+      console.error('Error renaming entity:', err);
+      throw new InternalServerErrorException('Failed to rename entity');
     }
   }
 }
