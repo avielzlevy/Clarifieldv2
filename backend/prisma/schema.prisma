@@ -60,6 +60,7 @@ model AuditLog {
   id        Int      @id @default(autoincrement())
   timestamp DateTime @default(now())
   ip        String
+  username  String
   method    String
   path      String
   status    Int

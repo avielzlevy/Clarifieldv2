@@ -41,19 +41,24 @@ const LogsPage = () => {
 
   // Define columns for the DataGrid
   const columns = useMemo(() => [
-    { field: 'timestamp', headerName: t('common.timestamp'), width: 210 },
-    { field: 'ip', headerName: t('logs.ip_address'), width: 120 },
-    { field: 'method', headerName: t('logs.method'), width: 100 },
+    { field: 'timestamp', headerName: t('common.timestamp'), width: 210, headerAlign: 'center', align: 'center' },
+    { field: 'ip', headerName: t('logs.ip_address'), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'method', headerName: t('logs.method'), width: 100, headerAlign: 'center', align: 'center' },
     {
-      field: 'path', headerName: t('logs.url'), flex: 1, renderCell: (params) => (
-        <Box dir='ltr' sx={{ textAlign: 'left', width: '100%' }}>
+      field: 'path', headerName: t('logs.url'),
+      flex: 1,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: params => (
+        <Box dir="ltr" sx={{ width: '100%', textAlign: 'center' }}>
           {params.value}
         </Box>
-      )
+      ),
     },
-    { field: 'status', headerName: t('logs.status'), width: 70 },
-    { field: 'responseTime', headerName: t('logs.response_time'), width: 100 },
+    { field: 'status', headerName: t('logs.status'), width: 70, headerAlign: 'center', align: 'center' },
+    { field: 'duration', headerName: t('logs.response_time'), width: 100, headerAlign: 'center', align: 'center' },
   ], [t]);
+
 
   if (error) {
     return (
