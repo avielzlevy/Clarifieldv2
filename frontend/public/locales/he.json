@@ -67,7 +67,8 @@
         "actions": "פעולות",
         "filter": "סינון",
         "change_warning_1": "אזהרה: שינויים בפריט זה ישפיעו על",
-        "change_warning_2": " הפריטים הבאים:\n"
+        "change_warning_2": " הפריטים הבאים:\n",
+        "timestamp": "חותמת זמן"
     },
     "home": {
         "error_fetching_items": "שגיאה בטעינת פריטים",
@@ -77,6 +78,8 @@
         "recent": "פעילות אחרונה",
         "error_fetching_recent": "שגיאה בטעינת פעילות אחרונה",
         "recent_empty": "אין פעילות אחרונה",
+        "details_for": "פרטים עבור",
+        "change_details": "פרטיי שינוי",
         "before": "לפני",
         "after": "אחרי",
         "reports": "דוחות",

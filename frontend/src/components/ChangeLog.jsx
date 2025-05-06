@@ -14,6 +14,8 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
+// ← import the locales you need
+import { enUS, he, de, ar, fr, es } from "date-fns/locale";
 import { Boxes, FileJson, Book } from "lucide-react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
@@ -25,8 +27,22 @@ const ChangeLog = ({ activeFilters }) => {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();  // ← grab i18n from the hook
   const theme = useTheme();
+
+  // map your i18n codes to date-fns locales
+  const localeMap = useMemo(
+    () => ({
+      en: enUS,
+      he: he,
+      de: de,
+      ar: ar,
+      fr: fr,
+      es: es,
+    }),
+    []
+  );
+  const currentLocale = localeMap[i18n.language] || enUS;
 
   useEffect(() => {
     const fetchChangeLog = async () => {
@@ -46,17 +62,15 @@ const ChangeLog = ({ activeFilters }) => {
         setLoading(false);
       }
     };
-
     fetchChangeLog();
   }, [t]);
 
-  // Memoized filtered and sorted logs
   const combinedLogs = useMemo(() => {
     let logs = [
       ...changeData.formats.map((item) => ({ ...item, category: "format" })),
       ...changeData.definitions.map((item) => ({ ...item, category: "definition" })),
       ...changeData.entities.map((item) => ({ ...item, category: "entity" })),
-    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     return logs.filter(
       (log) =>
@@ -89,57 +103,61 @@ const ChangeLog = ({ activeFilters }) => {
         return null;
     }
   };
+
   if (loading) return <Loading />;
   if (!combinedLogs.length) {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold"}}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
           {t("home.recent")}
           <NoData type="recent" />
         </Typography>
       </Box>
-    )
-  }
-  const renderChangeLogList = () => {
-    return (
-      <List sx={{ overflow: "auto" }}>
-        {combinedLogs.map(({ name, timestamp, before, after, userName, category }, index) => {
-          const changeType = before === "" ? "created" : after === "" ? "deleted" : "updated";
-          const timeAgo = formatDistanceToNow(new Date(timestamp), { addSuffix: true });
-
-          return (
-            <ListItemButton
-              key={index}
-              onClick={() => handleItemClick({ name, timestamp, before, after, userName, category })}
-              sx={{
-                borderRadius: 1,
-                mb: 1,
-                backgroundColor: theme.palette.background.default,
-                "&:hover": { backgroundColor: theme.palette.custom.light },
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <ListItemText
-                  primary={
-                    <>
-                      {userName || t("navbar.admin")} {t(`common.${changeType}`)}{" "}
-                      <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                        <Typography component="span" fontWeight={600}>
-                          {name}
-                        </Typography>
-                        {getCategoryIcon(category)}
-                      </Box>
-                    </>
-                  }
-                  secondary={timeAgo}
-                />
-              </Box>
-            </ListItemButton>
-          );
-        })}
-      </List>
     );
-  };
+  }
+
+  const renderChangeLogList = () => (
+    <List sx={{ overflow: "auto" }}>
+      {combinedLogs.map(({ name, timestamp, before, after, userName, category }, index) => {
+        const changeType = before === "" ? "created" : after === "" ? "deleted" : "updated";
+        const timeAgo = formatDistanceToNow(new Date(timestamp), {
+          addSuffix: true,
+          locale: currentLocale, // ← pass the locale
+        });
+
+        return (
+          <ListItemButton
+            key={index}
+            onClick={() => handleItemClick({ name, timestamp, before, after, userName, category })}
+            sx={{
+              borderRadius: 1,
+              mb: 1,
+              backgroundColor: theme.palette.background.default,
+              "&:hover": { backgroundColor: theme.palette.custom.light },
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <ListItemText
+                primary={
+                  <>
+                    {userName || t("navbar.admin")} {t(`common.${changeType}`)}{" "}
+                    <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+                      <Typography component="span" fontWeight={600}>
+                        {name}
+                      </Typography>
+                      {getCategoryIcon(category)}
+                    </Box>
+                  </>
+                }
+                secondary={timeAgo}
+              />
+            </Box>
+          </ListItemButton>
+        );
+      })}
+    </List>
+  );
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Box sx={{ textAlign: "center" }}>
@@ -148,16 +166,18 @@ const ChangeLog = ({ activeFilters }) => {
         </Typography>
       </Box>
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>{renderChangeLogList()}</Box>
+
       {/* Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
         <DialogTitle>
-          {selectedLog ? `${t("details_for")} ${selectedLog.name}` : t("change_details")}
+          {selectedLog ? `${t("home.details_for")} ${selectedLog.name}` : t("home.change_details")}
         </DialogTitle>
         <DialogContent dividers>
           {selectedLog && (
             <>
               <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                {`${t("timestamp")}: ${new Date(selectedLog.timestamp).toLocaleString()}`}
+                {/* use the same locale for the full timestamp */}
+                {`${t("common.timestamp")}: ${new Date(selectedLog.timestamp).toLocaleString(i18n.language)}`}
               </Typography>
               {selectedLog.before && (
                 <Box sx={{ mb: 2 }}>
@@ -166,6 +186,7 @@ const ChangeLog = ({ activeFilters }) => {
                   </Typography>
                   <Box
                     component="pre"
+                    dir='ltr'
                     sx={{
                       backgroundColor: theme.palette.background.default,
                       p: 1,
@@ -186,6 +207,7 @@ const ChangeLog = ({ activeFilters }) => {
                   </Typography>
                   <Box
                     component="pre"
+                    dir="ltr"
                     sx={{
                       backgroundColor: theme.palette.background.default,
                       p: 1,

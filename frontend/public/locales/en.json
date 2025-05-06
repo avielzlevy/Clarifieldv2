@@ -67,7 +67,8 @@
         "actions": "Actions",
         "filter": "Filter",
         "change_warning_1": "CAUTION: Changes to this item will",
-        "change_warning_2": " the following items:\n"
+        "change_warning_2": " the following items:\n",
+        "timestamp":"Timestamp"
     },
     "home": {
         "error_fetching_items": "Error fetching items",
@@ -77,6 +78,8 @@
         "recent": "Recent Activity",
         "error_fetching_recent": "Error fetching recent activity",
         "recent_empty": "No recent activity",
+        "details_for": "Details for",
+        "change_details": "Change details",
         "before": "Before",
         "after": "After",
         "reports": "Reports",
@@ -136,7 +139,6 @@
         "use_regex":"Use Regex"
     },
     "logs":{
-        "timestamp":"Timestamp",
         "ip_address":"IP Address",
         "method":"Method",
         "url":"URL",
