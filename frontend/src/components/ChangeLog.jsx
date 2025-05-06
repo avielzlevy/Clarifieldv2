@@ -89,12 +89,18 @@ const ChangeLog = ({ activeFilters }) => {
         return null;
     }
   };
-
+  if (loading) return <Loading />;
+  if (!combinedLogs.length) {
+    return (
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold"}}>
+          {t("home.recent")}
+          <NoData type="recent" />
+        </Typography>
+      </Box>
+    )
+  }
   const renderChangeLogList = () => {
-    if (!combinedLogs.length) {
-      return <NoData type="popular" />;
-    }
-
     return (
       <List sx={{ overflow: "auto" }}>
         {combinedLogs.map(({ name, timestamp, before, after, userName, category }, index) => {
@@ -141,9 +147,7 @@ const ChangeLog = ({ activeFilters }) => {
           {t("home.recent")}
         </Typography>
       </Box>
-      {loading ? <Loading/> : (
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>{renderChangeLogList()}</Box>
-      )}
       {/* Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
         <DialogTitle>

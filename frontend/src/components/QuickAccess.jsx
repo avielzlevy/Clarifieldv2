@@ -87,10 +87,10 @@ const QuickAccess = ({ activeFilters }) => {
   if (!filteredItems.length) {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
           {t("home.popular")}
         </Typography>
-        <NoData type="" />
+        <NoData type="popular" />
       </Box>
     );
   }
@@ -99,7 +99,7 @@ const QuickAccess = ({ activeFilters }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Box sx={{ textAlign: "center" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold"}}>
           {t("home.popular")}
         </Typography>
       </Box>

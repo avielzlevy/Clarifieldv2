@@ -17,7 +17,7 @@ function Loading(props) {
         flexGrow: 1,
         backgroundColor: "rgba(255, 255, 255, 0.562)",
         backdropFilter: "blur(10px)",
-        zIndex: 99999,
+        zIndex: -1,
       }}
     >
       <Box
