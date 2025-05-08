@@ -2,7 +2,7 @@
     "navbar": {
         "app_name": "Clarifield",
         "page_not_found": "Page non trouvée",
-        "viewer": "Lecteur",
+        "viewer": "Visionneuse",
         "admin": "Administrateur",
         "home": "Tableau de bord",
         "entities": "Entités",
@@ -13,10 +13,10 @@
         "analytics": "Analytique",
         "logs": "Journaux",
         "problems": "Problèmes",
-        "problem_need": "problèmes nécessitant",
+        "problem_need": "Problèmes nécessitant",
         "attention": "attention",
         "review_and_update": "Examinez et mettez à jour vos définitions, formats et références d'entités pour résoudre ces problèmes.",
-        "search": "Rechercher"
+        "search": "Recherche"
     },
     "common": {
         "format": "Format",
@@ -37,9 +37,9 @@
         "updated": "Mis à jour",
         "save": "Enregistrer",
         "copy": "Copier",
-        "copy_as": "Copier comme",
+        "copy_as": "Copier en tant que",
         "copied": "Copié dans le presse-papiers",
-        "copying": "Copie en cours",
+        "copying": "Copie",
         "cancel": "Annuler",
         "close": "Fermer",
         "add": "Ajouter",
@@ -50,7 +50,7 @@
         "description": "Description",
         "submit": "Soumettre",
         "apply": "Appliquer",
-        "table": "Table",
+        "table": "Tableau",
         "object": "Objet",
         "example": "Exemple",
         "cannot_be_undone": "Cette action est irréversible",
@@ -62,12 +62,13 @@
         "delete_confirmation": "Confirmation de suppression",
         "delete_sure": "Êtes-vous sûr de vouloir supprimer : ",
         "sure": "Êtes-vous sûr ?",
-        "reporting": "Signalement",
-        "report": "Signaler",
+        "reporting": "Rapport en cours",
+        "report": "Rapport",
         "actions": "Actions",
         "filter": "Filtrer",
-        "change_warning_1": "ATTENTION : Les modifications apportées à cet élément vont",
-        "change_warning_2": " les éléments suivants :\n"
+        "change_warning_1": "ATTENTION : Les modifications apportées à cet élément affecteront",
+        "change_warning_2": " les éléments suivants :\n",
+        "timestamp": "Horodatage"
     },
     "home": {
         "error_fetching_items": "Erreur lors de la récupération des éléments",
@@ -77,6 +78,8 @@
         "recent": "Activité récente",
         "error_fetching_recent": "Erreur lors de la récupération de l'activité récente",
         "recent_empty": "Aucune activité récente",
+        "details_for": "Détails pour",
+        "change_details": "Détails des modifications",
         "before": "Avant",
         "after": "Après",
         "reports": "Rapports",
@@ -91,10 +94,10 @@
     "login": {
         "username": "Nom d'utilisateur",
         "password": "Mot de passe",
-        "sign_in": "Connexion",
+        "sign_in": "Se connecter",
         "sign_in_failed": "Échec de la connexion",
-        "signed_in": "Connecté avec succès",
-        "signed_out": "Déconnecté avec succès"
+        "signed_in": "Connexion réussie",
+        "signed_out": "Déconnexion réussie"
     },
     "entities": {
         "entity_already_exists": "L'entité existe déjà",
@@ -106,9 +109,9 @@
         "deleted_definition": "Définition supprimée avec succès",
         "error_deleting_definition": "Erreur lors de la suppression de la définition",
         "error_fetching_naming_convention": "Erreur lors de la récupération de la convention de nommage",
-        "bad_naming_convention": "Le nom doit être au format",
+        "bad_naming_convention": "Le nom doit être en",
         "definition_already_exists": "La définition existe déjà",
-        "fill_all_fields_1": "Veuillez remplir les champs ci-dessous pour",
+        "fill_all_fields_1": "Veuillez remplir les détails ci-dessous pour",
         "fill_all_fields_2": "la définition",
         "report_submitted": "Rapport soumis avec succès",
         "error_submitting_report": "Échec de la soumission du rapport",
@@ -116,11 +119,11 @@
         "provide_description": " Veuillez fournir une brève description du problème"
     },
     "formats": {
-        "fill_all_fields": "Veuillez remplir les champs ci-dessous pour",
-        "pattern_must": "Le motif doit être une expression régulière valide encadrée par ^ et $",
+        "fill_all_fields": "Veuillez remplir les détails ci-dessous pour",
+        "pattern_must": "Le motif doit être une expression régulière valide commençant par ^ et se terminant par $",
         "pattern": "Motif",
-        "open_regex_builder": "Ouvrir le générateur de regex",
-        "regex_builder": "Générateur de regex",
+        "open_regex_builder": "Ouvrir le générateur Regex",
+        "regex_builder": "Générateur Regex",
         "presets": "Préréglages",
         "min": "Min",
         "max": "Max",
@@ -133,10 +136,9 @@
         "currentRegex": "Regex actuel",
         "random": "Aléatoire",
         "no_examples": "Aucun exemple disponible",
-        "use_regex": "Utiliser une regex"
+        "use_regex": "Utiliser Regex"
     },
     "logs": {
-        "timestamp": "Horodatage",
         "ip_address": "Adresse IP",
         "method": "Méthode",
         "url": "URL",
@@ -153,13 +155,13 @@
     },
     "validation": {
         "results": "Résultats de validation",
-        "validating_json": "Validation du JSON en cours...",
+        "validating_json": "Validation du JSON...",
         "valid": "Valide",
         "invalid": "Invalide",
-        "meet_requirements": "Le JSON est valide et respecte toutes les exigences du schéma",
-        "does_not_meet": "Le JSON contient des erreurs ou ne respecte pas les exigences du schéma.",
+        "meet_requirements": "Le JSON est valide et répond à toutes les exigences du schéma",
+        "does_not_meet": "Le JSON contient des erreurs ou ne répond pas aux exigences du schéma.",
         "validations_issues": "Problèmes de validation",
         "schema_validation": "Validation du schéma",
-        "schema_valid": "Toutes les exigences du schéma ont été respectées. La structure JSON est valide et peut être utilisée dans votre application"
+        "schema_valid": "Toutes les exigences du schéma ont été satisfaites. La structure JSON est valide et peut être utilisée dans votre application"
     }
 }

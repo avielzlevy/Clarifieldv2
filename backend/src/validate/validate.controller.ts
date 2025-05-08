@@ -9,7 +9,7 @@ import { ValidateService } from './validate.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('validate')
-@ApiTags('validate')
+@ApiTags('Validate')
 export class ValidateController {
   constructor(private readonly validateService: ValidateService) {}
 

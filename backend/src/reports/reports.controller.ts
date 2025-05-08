@@ -1,5 +1,13 @@
 // src/reports/reports.controller.ts
-import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Param,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { AddReportDto, UpdateReportDto } from './reports.dto';
 import {
@@ -8,9 +16,11 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('reports')
+@ApiTags('Reports')
 @Controller('reports')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
@@ -67,6 +77,7 @@ export class ReportsController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Put(':name')
   @ApiOperation({
     summary:
@@ -94,6 +105,7 @@ export class ReportsController {
     },
   })
   @ApiResponse({ status: 400, description: 'Invalid request body' })
+  @ApiBearerAuth()
   async updateReport(
     @Param('name') name: string,
     @Body() dto: UpdateReportDto,

@@ -1,14 +1,24 @@
 // src/auth/auth.controller.ts
 
-import { Body, Controller, HttpCode, Post, Headers, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Headers,
+  Get,
+  UseGuards,
+} from '@nestjs/common';
 import { SignInDto, TokenResponseDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import {
   ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
   ApiHeader,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 @Controller('auth')
 @ApiTags('Auth')
@@ -36,6 +46,7 @@ export class AuthController {
   }
 
   //verify has to be a GET request and token will be passed in the header Authorization
+  @UseGuards(JwtAuthGuard)
   @Get('verify')
   @ApiOperation({
     summary: 'Verify the validity of a token',
@@ -54,6 +65,7 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized or invalid token.',
   })
+  @ApiBearerAuth()
   async verifyToken(
     @Headers('Authorization') token: string,
   ): Promise<{ valid: boolean }> {

@@ -10,7 +10,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 @Controller('changes')
-@ApiTags('changes')
+@ApiTags('Changes')
 export class ChangesController {
   constructor(private readonly changesService: ChangesService) {}
 

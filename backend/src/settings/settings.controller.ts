@@ -11,7 +11,7 @@ import {
 } from '@nestjs/swagger';
 
 @Controller('settings')
-@ApiTags('settings')
+@ApiTags('Settings')
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 

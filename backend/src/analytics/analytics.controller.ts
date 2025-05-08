@@ -4,7 +4,7 @@ import { AnalyticsService } from './analytics.service';
 import { AddAnalyticDto } from './analytics.dto';
 
 @ApiTags('analytics')
-@Controller('analytics')
+@Controller('Analytics')
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
