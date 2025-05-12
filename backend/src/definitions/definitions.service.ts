@@ -105,7 +105,6 @@ export class DefinitionsService {
       throw new InternalServerErrorException('Failed to update definition');
     }
   }
-  //TODO: maybe add cleanup for other objects that use this definition
   async deleteDefinition(name: string): Promise<void> {
     try {
       const existing = await this.prisma.definition.findUnique({

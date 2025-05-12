@@ -15,7 +15,7 @@ import { useEntities } from '../contexts/useEntities';
 import { useTheme } from '@emotion/react';
 import { useTranslation } from 'react-i18next';
 
-const CreateEntityForm = ({ newEntity, setNewEntity, error }) => {
+const CreateEntityForm = ({ newEntity, setNewEntity, namingConventionError }) => {
   const theme = useTheme();
   const { definitions } = useDefinitions();
   const { entities } = useEntities();
@@ -119,8 +119,8 @@ const CreateEntityForm = ({ newEntity, setNewEntity, error }) => {
         fullWidth
         value={newEntity.label}
         onChange={(e) => setNewEntity((prev) => ({ ...prev, label: e.target.value }))}
-        helperText={error}
-        error={Boolean(error)}
+        helperText={namingConventionError}
+        error={Boolean(namingConventionError)}
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, minWidth: 250 }}>
         {newEntity.fields.map((field, index) => {

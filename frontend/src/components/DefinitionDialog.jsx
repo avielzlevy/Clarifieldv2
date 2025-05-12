@@ -27,14 +27,6 @@ const DefinitionDialog = ({ mode, open, onClose, editedDefinition }) => {
   const { setRefreshSearchables } = useSearch();
   const { fetchAffectedItems, affected } = useAffectedItems();
   const token = localStorage.getItem("token");
-  const buttonRef = useRef();
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault(); // prevent line breaks in textarea etc.
-      handleSubmit();
-    }
-  };
 
   // form state
   const [definition, setDefinition] = useState({

@@ -146,7 +146,6 @@ export class EntitiesService {
           fields: data.fields as unknown as Prisma.JsonArray,
         },
       });
-      //TODO: show only deltas
       await this.changesService.addChange({
         type: 'entities',
         name: label,

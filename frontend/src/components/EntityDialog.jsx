@@ -44,19 +44,39 @@ function EntityDialog({
   const [newEntity, setNewEntity] = useState({ label: '', fields: [] });
   const [sureDelete, setSureDelete] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const [error, setError] = useState(null);
   const [report, setReport] = useState({ type: '', description: '' });
   const { logout } = useAuth();
   const { setRefreshSearchables } = useSearch();
   const token = localStorage.getItem('token');
 
+
+
+  // naming & validation
+  const [namingConvention, setNamingConvention] = useState("");
+  const [namingConventionError, setNamingConventionError] = useState("");
+
+  const fetchSettings = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/settings`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNamingConvention(data.namingConvention);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        logout({ mode: "bad_token" });
+      } else {
+        console.error("Error fetching settings:", error);
+        enqueueSnackbar(t("error_fetching_settings"), { variant: "error" });
+      }
+    }
+  }, [logout, token, t]);
+
   useEffect(() => {
     fetchDefinitions();
     fetchEntities();
-  }, [fetchDefinitions, fetchEntities]);
-
-  // Get affected items for a given node.
-
+    fetchSettings();
+  }, [fetchDefinitions, fetchEntities, fetchSettings]);
 
   useEffect(() => {
     if (selectedNode && ['edit', 'delete'].includes(mode)) {
@@ -81,11 +101,44 @@ function EntityDialog({
           break;
 
         case 'create':
-          //TODO: implement naming convention check
-          // if (/[A-Z]/.test(newEntity.label)) {
-          //   setError(t('entity_name_lowercase_error'));
-          //   throw new Error('Entity name must be lowercase');
-          // }
+          if (!namingConvention) return true;
+          const { label } = newEntity;
+          switch (namingConvention) {
+            case 'snake_case':
+              if (!/^[a-z0-9_]+$/.test(label)) {
+                setNamingConventionError(
+                  `${t('definitions.bad_naming_convention')} ${t('common.snake_case')}`
+                );
+                return;
+              }
+              break;
+            case 'camelCase':
+              if (!/^[a-z][a-zA-Z0-9]*$/.test(label)) {
+                setNamingConventionError(
+                  `${t('definitions.bad_naming_convention')} ${t('common.camel_case')}`
+                );
+                return;
+              }
+              break;
+            case 'PascalCase':
+              if (!/^[A-Z][a-zA-Z0-9]*$/.test(label)) {
+                setNamingConventionError(
+                  `${t('definitions.bad_naming_convention')} ${t('common.pascal_case')}`
+                );
+                return;
+              }
+              break;
+            case 'kebab-case':
+              if (!/^[a-z0-9-]+$/.test(label)) {
+                setNamingConventionError(
+                  `${t('definitions.bad_naming_convention')} ${t('common.kebab_case')}`
+                );
+                return;
+              }
+              break;
+            default:
+              setNamingConventionError('');
+          }
           response = await axios.post(`${process.env.REACT_APP_API_URL}/api/entities`, newEntity, { headers });
           break;
 
@@ -348,7 +401,7 @@ function EntityDialog({
       <DialogContent>
         {mode === 'edit' && <EditEntityForm node={selectedNode} setNode={setSelectedNode} />}
         {mode === 'copy' && <CopyEntityForm node={selectedNode} onCheckChange={setCheckedFields} />}
-        {mode === 'create' && <CreateEntityForm newEntity={newEntity} setNewEntity={setNewEntity} error={error} />}
+        {mode === 'create' && <CreateEntityForm newEntity={newEntity} setNewEntity={setNewEntity} namingConventionError={namingConventionError} />}
         {mode === 'delete' && (
           <DeleteEntityForm
             node={selectedNode}
@@ -391,7 +444,7 @@ function EntityDialog({
               {['table', 'object', 'example'].map((type) => (
                 <MenuItem key={type} onClick={() => handleCopyClick({ entity: selectedNode, selectedData: checkedFields, type })}>
                   {t('common.copy_as')} {t(`common.${type}`)}
-                  </MenuItem>
+                </MenuItem>
               ))}
             </Menu>
           </Box>}

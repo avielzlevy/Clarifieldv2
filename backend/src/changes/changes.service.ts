@@ -24,7 +24,7 @@ export class ChangesService {
       throw new InternalServerErrorException('Failed to fetch changes');
     }
   }
-
+  // ? Maybe change it to deltas
   async addChange(change: CreateChangeDto): Promise<void> {
     const { type, name, timestamp, before, after } = change;
     try {

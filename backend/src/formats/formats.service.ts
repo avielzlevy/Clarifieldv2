@@ -105,7 +105,6 @@ export class FormatsService {
       throw new InternalServerErrorException('Failed to update format');
     }
   }
-  //TODO: maybe add cleanup for other objects that use this format
   async deleteFormat(name: string): Promise<void> {
     try {
       const existing = await this.prisma.format.findUnique({ where: { name } });
