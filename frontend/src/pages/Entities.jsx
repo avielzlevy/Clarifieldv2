@@ -66,8 +66,9 @@ function Entities() {
         const searchTerm = searchQuery.trim().toLowerCase();
         if (!searchTerm) return;
 
-        const foundNode = nodesRef.current.find((node) =>
-            node.data.label.toLowerCase().includes(searchTerm)
+        const foundNode = nodesRef.current.find(
+            (node) => node.data && typeof node.data.label === 'string' && // Safety checks
+                node.data.label.toLowerCase() === searchTerm
         );
 
         if (foundNode && reactFlowInstanceRef.current) {

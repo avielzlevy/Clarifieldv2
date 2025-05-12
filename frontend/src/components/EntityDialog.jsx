@@ -330,7 +330,6 @@ function EntityDialog({
 
   const handleCopyClick = async ({ entity, selectedData, type }) => {
     // Process the selected fields. Each field might be a definition or an entity.
-    console.log('data', entity, selectedData, type);
     sendAnalytics(entity.label, 'entity', 1);
     const data = selectedData
       .map(processField)

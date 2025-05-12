@@ -21,8 +21,7 @@ export const determineRegexType = (pattern) => {
 };
 
 export const generateSampleValue = (field) => {
-  const { label, type, format } = field;
-  console.log(`Generating sample value for field: ${label}, type: ${type}, format: ${format}`);
+  const { name, type, format } = field;
   switch (type.toLowerCase()) {
     case 'string':
       if (format) {
@@ -35,6 +34,8 @@ export const generateSampleValue = (field) => {
       }
       return 'sampleString';
     case 'number':
+      return 42.0;
+    case 'integer':
       return 42;
     case 'boolean':
       return true;

@@ -158,6 +158,7 @@
         "validating_json":"Validating JSON...",
         "valid":"Valid",
         "invalid":"Invalid",
+        "enter_json_prompt":"Enter JSON to validate",
         "meet_requirements":"The JSON is valid and meets all schema requirements",
         "does_not_meet":"The JSON contains errors or does not meet schema requirements.",
         "validations_issues":"Validation Issues",

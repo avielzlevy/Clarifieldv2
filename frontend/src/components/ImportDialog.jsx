@@ -250,7 +250,6 @@ export default function ImportDialog({ open, setOpen, onFilesSelected }) {
         throw new Error('Error importing data');
       }
       const importResult = await importResponse.json();
-      console.log('Import successful:', importResult);
       onClose();
     } catch (error) {
       console.error('Import failed:', error);
