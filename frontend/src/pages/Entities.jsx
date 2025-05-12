@@ -19,6 +19,14 @@ import { useSearch } from '../contexts/SearchContext';
 import Loading from '../components/Loading';
 import { useRtl } from '../contexts/RtlContext';
 
+const AVG_CHAR_WIDTH = 8;           // Average width of a character in your font
+const CARD_HORIZONTAL_PADDING = 20; // Total horizontal padding inside a card (left + right)
+const CARD_TITLE_HEIGHT = 30;       // Height of the card's title/label area
+const FIELD_ITEM_BASE_HEIGHT = 22;  // Base height for a single field item line
+const FIELD_ITEM_LINE_SPACING = 4;  // Extra spacing if field text wraps
+const CARD_VERTICAL_PADDING = 20;   // Total vertical padding inside a card (top + bottom)
+const ICON_WIDTH_IF_PRESENT = 20; // If fields have icons, add space for them
+
 function Entities() {
     const nodeTypes = useMemo(() => ({ entityCard: EntityCard }), []);
     const theme = useTheme();
@@ -75,67 +83,94 @@ function Entities() {
 
     // Optimize text width calculation
     const approximateTextWidth = useCallback(
-        (text, avgCharWidth = 8, padding = 20) => text.length * avgCharWidth + padding,
+        (text, avgCharWidth = 7, padding = 20) => text.length * avgCharWidth + padding,
         []
     );
 
-    const getCardWidth = useCallback((entity, avgCharWidth = 8, padding = 20) => {
+    const getCardWidth = useCallback((entity, avgCharWidth = 7, padding = 20) => {
         return entity.fields.reduce(
             (maxWidth, field) => Math.max(maxWidth, approximateTextWidth(field.label, avgCharWidth)),
             approximateTextWidth(entity.label, avgCharWidth)
         ) + padding;
     }, [approximateTextWidth]);
 
-    // Fetch nodes from the API
-    // Replace your fetchNodes function with the following:
+
+    const getCardHeight = useCallback((entity, cardWidth) => {
+        if (!entity || !entity.fields) return CARD_TITLE_HEIGHT + CARD_VERTICAL_PADDING;
+
+        let fieldsTotalHeight = 0;
+        const contentWidth = cardWidth - CARD_HORIZONTAL_PADDING; // Available width for text
+
+        entity.fields.forEach(field => {
+            const text = field.label || "";
+            const textWidth = approximateTextWidth(text);
+            // Estimate lines (simple version, for more accuracy use canvas measureText or an offscreen div)
+            const lines = Math.max(1, Math.ceil(textWidth / contentWidth));
+            fieldsTotalHeight += (lines * FIELD_ITEM_BASE_HEIGHT) + ((lines - 1) * FIELD_ITEM_LINE_SPACING);
+        });
+
+        return CARD_TITLE_HEIGHT + fieldsTotalHeight + CARD_VERTICAL_PADDING + (entity.fields.length > 0 ? (entity.fields.length - 1) * 5 : 0) /* small gap between fields */;
+    }, []);
+
     const fetchNodes = useCallback(async () => {
         setLoading(true);
         try {
             const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/entities`);
-            let currentX = 0;
-            // Use Object.entries to capture both key and value.
-            const newNodes = Object.entries(data).map(([entityKey, entity], index) => {
-                // Use the key as the label.
-                const entityData = { label: entityKey, fields: entity.fields };
+            // To use mock data for testing if API is not ready:
+            // const data = getMockData();
+
+
+            const itemsPerRow = 10;
+            const horizontalGap = 40;
+            const verticalGap = 30;
+            const initialXOffset = 20;
+            let currentYOffset = 20;
+            let currentXInRow = initialXOffset;
+            let maxHeightInCurrentRow = 0;
+
+            const entityEntries = Object.entries(data);
+            const newNodes = [];
+
+            for (let i = 0; i < entityEntries.length; i++) {
+                const [entityKey, entityValue] = entityEntries[i];
+                // Ensure entityValue and entityValue.fields are valid
+                const fields = (entityValue && Array.isArray(entityValue.fields)) ? entityValue.fields : [];
+                const entityData = { label: entityKey, fields: fields };
+
                 const cardWidth = getCardWidth(entityData);
+                const cardHeight = getCardHeight(entityData, cardWidth);
+
+                if (i > 0 && i % itemsPerRow === 0) { // Start a new row
+                    currentXInRow = initialXOffset;
+                    currentYOffset += maxHeightInCurrentRow + verticalGap;
+                    maxHeightInCurrentRow = 0; // Reset for the new row
+                }
+
                 const nodeObject = {
-                    id: entityKey, // Using entityKey as unique id
-                    type: 'entityCard',
-                    position: { x: currentX, y: 100 },
+                    id: entityKey,
+                    type: 'entityCard', // Your custom node type
+                    position: { x: currentXInRow, y: currentYOffset },
                     data: {
                         ...entityData,
-                        onCopy: () => {
-                            setDialogMode('copy');
-                            setDialogOpen(true);
-                        },
-                        onEdit: () => {
-                            setDialogMode('edit');
-                            setDialogOpen(true);
-                        },
-                        onDelete: () => {
-                            setDialogMode('delete');
-                            setDialogOpen(true);
-                        },
-                        onMouseEnter: () => {
-                            setSelectedNode(entityData);
-                        },
-                        onMouseLeave: () => {
-                            setSelectedNode(null);
-                            setDialogMode(null);
-                        },
-                        onEntityClick: (nodeLabel) => {
-                            performSearch(nodeLabel);
-                        },
-                        onReport: () => {
-                            setDialogMode('report');
-                            setDialogOpen(true);
-                        },
+                        onCopy: () => { setDialogMode('copy'); setDialogOpen(true); setSelectedNode(entityData); },
+                        onEdit: () => { setDialogMode('edit'); setDialogOpen(true); setSelectedNode(entityData); },
+                        onDelete: () => { setDialogMode('delete'); setDialogOpen(true); setSelectedNode(entityData); },
+                        onMouseEnter: () => { setSelectedNode(entityData); },
+                        onMouseLeave: () => { /* if (!dialogOpen) setSelectedNode(null); */ },
+                        onEntityClick: (nodeLabel) => { performSearch(nodeLabel); },
+                        onReport: () => { setDialogMode('report'); setDialogOpen(true); setSelectedNode(entityData); },
                     },
-                    style: { width: cardWidth },
+                    style: { // Pass width and height to your custom node
+                        width: cardWidth,
+                        height: cardHeight,
+                    },
                 };
-                currentX += cardWidth + 30;
-                return nodeObject;
-            });
+                newNodes.push(nodeObject);
+
+                currentXInRow += cardWidth + horizontalGap;
+                maxHeightInCurrentRow = Math.max(maxHeightInCurrentRow, cardHeight);
+            }
+
             setNodes(newNodes);
         } catch (error) {
             console.error('Error fetching entities:', error);
@@ -143,7 +178,12 @@ function Entities() {
         } finally {
             setLoading(false);
         }
-    }, [getCardWidth, performSearch]);
+    }, [
+        getCardWidth,
+        getCardHeight,
+        performSearch,
+        // setDialogMode, setDialogOpen, setSelectedNode // Add if they are props or could change
+    ]);
 
 
     // Initial fetch effect

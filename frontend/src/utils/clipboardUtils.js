@@ -13,16 +13,16 @@ export const determineRegexType = (pattern) => {
       const newRegex = new RegExp(pattern);
       return newRegex.test(value);
     });
-
-  if (matchesAll(testValues.integer)) return 'integer';
-  if (matchesAll(testValues.number)) return 'number';
   if (matchesAll(testValues.string)) return 'string';
   if (matchesAll(testValues.boolean)) return 'boolean';
+  if (matchesAll(testValues.number)) return 'number';
+  if (matchesAll(testValues.integer)) return 'integer';
   return 'string';
 };
 
 export const generateSampleValue = (field) => {
-  const { type, format } = field;
+  const { label, type, format } = field;
+  console.log(`Generating sample value for field: ${label}, type: ${type}, format: ${format}`);
   switch (type.toLowerCase()) {
     case 'string':
       if (format) {

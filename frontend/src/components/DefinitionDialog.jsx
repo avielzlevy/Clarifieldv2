@@ -98,7 +98,7 @@ const DefinitionDialog = ({ mode, open, onClose, editedDefinition }) => {
         }
         break;
       case "camelCase":
-        if (!/^[a-z]+([A-Z][a-z]*)*$/.test(name)) {
+        if (!/^[a-z]+([A-Z][a-z0-9]*)*$/.test(name)) {
           setNamingConventionError(
             `${t("definitions.bad_naming_convention")} ${t("common.camel_case")}`
           );

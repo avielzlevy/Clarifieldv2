@@ -81,10 +81,11 @@ function EntityDialog({
           break;
 
         case 'create':
-          if (/[A-Z]/.test(newEntity.label)) {
-            setError(t('entity_name_lowercase_error'));
-            throw new Error('Entity name must be lowercase');
-          }
+          //TODO: implement naming convention check
+          // if (/[A-Z]/.test(newEntity.label)) {
+          //   setError(t('entity_name_lowercase_error'));
+          //   throw new Error('Entity name must be lowercase');
+          // }
           response = await axios.post(`${process.env.REACT_APP_API_URL}/api/entities`, newEntity, { headers });
           break;
 

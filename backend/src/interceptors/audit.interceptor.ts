@@ -23,10 +23,9 @@ export class AuditLoggerInterceptor implements NestInterceptor {
         const request = context.switchToHttp().getRequest<Request>();
         const response = context.switchToHttp().getResponse<Response>();
         const method: string = request.method;
-        if (['GET', 'OPTIONS', 'HEAD'].includes(method)) {
-          return;
-        }
+        if (['GET', 'OPTIONS', 'HEAD'].includes(method)) return;
         const path: string = request.originalUrl;
+        if (path === '/api/analytics') return;
         const status: number = response.statusCode;
 
         // Determine the client IP safely.
