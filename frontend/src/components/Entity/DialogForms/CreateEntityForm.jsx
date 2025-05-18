@@ -10,8 +10,8 @@ import {
   Typography,
 } from '@mui/material';
 import { Trash2 as Trash, Plus, Book, Boxes } from 'lucide-react';
-import { useDefinitions } from '../contexts/useDefinitions';
-import { useEntities } from '../contexts/useEntities';
+import { useDefinitions } from '../../../contexts/useDefinitions';
+import { useEntities } from '../../../contexts/useEntities';
 import { useTheme } from '@emotion/react';
 import { useTranslation } from 'react-i18next';
 
@@ -114,7 +114,7 @@ const CreateEntityForm = ({ newEntity, setNewEntity, namingConventionError }) =>
   return (
     <Paper sx={{ p: 2 }}>
       <TextField
-        label={`${t('common.entity')} ${t('common.name')}`}
+        label={`${t('common.name')}`}
         variant="outlined"
         fullWidth
         value={newEntity.label}

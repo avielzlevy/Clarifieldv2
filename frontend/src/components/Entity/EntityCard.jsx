@@ -9,9 +9,9 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Boxes, Pencil, Trash2 as Trash, Copy, Flag } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useDefinitions } from '../contexts/useDefinitions';
-import { useEntities } from '../contexts/useEntities';
+import { useAuth } from '../../contexts/AuthContext';
+import { useDefinitions } from '../../contexts/useDefinitions';
+import { useEntities } from '../../contexts/useEntities';
 
 const EntityCard = ({ data }) => {
   const { auth } = useAuth();

@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { Box, Paper } from "@mui/material";
-import ChangeLog from "../components/ChangeLog";
-import QuickAccess from "../components/QuickAccess";
-import FilterToolbar from "../components/FilterToolbar";
+import ChangeLog from "../components/Homepage/ChangeLog";
+import QuickAccess from "../components/Homepage/QuickAccess";
+import FilterToolbar from "../components/Homepage/FilterToolbar";
 
 
 const ViewerHomepage = () => {
@@ -17,7 +17,7 @@ const ViewerHomepage = () => {
   const toggleFilter = useCallback((filterKey) => {
     setActiveFilters((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }));
   }, []);
-  
+
   console.log(`                                                                          
     _____       _        _____        _____     _     _    __                
    |     |___ _| |___   | __  |_ _   |  _  |_ _|_|___| |  |  |   ___ _ _ _ _ 

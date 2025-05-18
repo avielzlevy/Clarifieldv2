@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Button, Tooltip, Box } from '@mui/material';
 import { useTheme, styled } from '@mui/material/styles';
 import i18next from 'i18next';
-import { useRtl } from '../contexts/RtlContext';
+import { useRtl } from '../../contexts/RtlContext';
 
 const languages = [
   { code: 'en'},

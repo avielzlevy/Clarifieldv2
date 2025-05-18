@@ -11,12 +11,12 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
-import { useAuth } from "../contexts/AuthContext";
-import { useSearch } from "../contexts/SearchContext";
-import ChangeWarning from "./ChangeWarning";
-import { useAffectedItems } from "../contexts/useAffectedItems";
-import { useDefinitions } from "../contexts/useDefinitions";
-import { useFormats } from "../contexts/useFormats";
+import { useAuth } from "../../contexts/AuthContext";
+import { useSearch } from "../../contexts/SearchContext";
+import ChangeWarning from "../ChangeWarning";
+import { useAffectedItems } from "../../contexts/useAffectedItems";
+import { useDefinitions } from "../../contexts/useDefinitions";
+import { useFormats } from "../../contexts/useFormats";
 import { useTranslation } from "react-i18next";
 
 const DefinitionDialog = ({ mode, open, onClose, editedDefinition }) => {
@@ -132,7 +132,7 @@ const DefinitionDialog = ({ mode, open, onClose, editedDefinition }) => {
       fetchDefinitions();
       setRefreshSearchables((prev) => prev + 1);
       enqueueSnackbar(
-        `${t("definitions.definition")} ${t(`common.${mode}ed`)} ${t("common.successfully")}`,
+        `${t("common.definition")} ${t(`common.${mode}ed`)} ${t("common.successfully")}`,
         { variant: "success" }
       );
 

@@ -9,22 +9,22 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
-import EditEntityForm from './EditEntityForm';
-import CopyEntityForm from './CopyEntityForm';
-import CreateEntityForm from './CreateEntityForm';
-import DeleteEntityForm from './DeleteEntityForm';
-import ReportEntityForm from './ReportEntityForm';
-import ChangeWarning from './ChangeWarning';
-import { useAuth } from '../contexts/AuthContext';
+import EditEntityForm from './DialogForms/EditEntityForm';
+import CopyEntityForm from './DialogForms/CopyEntityForm';
+import CreateEntityForm from './DialogForms/CreateEntityForm';
+import DeleteEntityForm from './DialogForms/DeleteEntityForm';
+import ReportEntityForm from '../Report/DialogForms/ReportEntityForm';
+import ChangeWarning from '../ChangeWarning';
+import { useAuth } from '../../contexts/AuthContext';
 import { enqueueSnackbar } from 'notistack';
 import axios from 'axios';
-import { sendAnalytics } from '../utils/analytics';
-import { useSearch } from '../contexts/SearchContext';
-import { useDefinitions } from '../contexts/useDefinitions';
-import { useEntities } from '../contexts/useEntities';
-import { useFormats } from '../contexts/useFormats';
-import { useAffectedItems } from '../contexts/useAffectedItems';
-import { generateSampleObject, determineRegexType } from '../utils/clipboardUtils';
+import { sendAnalytics } from '../../utils/analytics';
+import { useSearch } from '../../contexts/SearchContext';
+import { useDefinitions } from '../../contexts/useDefinitions';
+import { useEntities } from '../../contexts/useEntities';
+import { useFormats } from '../../contexts/useFormats';
+import { useAffectedItems } from '../../contexts/useAffectedItems';
+import { generateSampleObject, determineRegexType } from '../../utils/clipboardUtils';
 import { useTranslation } from 'react-i18next';
 
 function EntityDialog({
@@ -156,7 +156,7 @@ function EntityDialog({
       }
 
       if (response?.status >= 200 && response?.status < 300) {
-        enqueueSnackbar(`${mode.charAt(0).toUpperCase() + mode.slice(1)} successful!`, { variant: 'success' });
+        enqueueSnackbar(`${mode !== 'edit' ? t(`common.${mode}d`) : t(`common.${mode}ed`)} ${t(`common.successfully`)}`, { variant: 'success' });
         await fetchEntities();
         fetchNodes();
         setNewEntity({ label: '', fields: [] });
@@ -336,12 +336,10 @@ function EntityDialog({
       .filter((item) => item !== null);
 
     if (!data || data.length === 0) {
-      enqueueSnackbar('No data available to export.', { variant: 'warning' });
       return;
     }
 
     if (type === 'object') {
-      // ... (existing code unchanged for object type)
       const entityData = convertFieldsToObject(data);
 
       const clipBoardData = JSON.stringify(entityData, null, 2);
@@ -349,7 +347,7 @@ function EntityDialog({
         'text/plain': new Blob([clipBoardData], { type: 'text/plain' }),
       });
       await navigator.clipboard.write([clipboardItem]);
-      enqueueSnackbar('Data copied to clipboard!', { variant: 'success' });
+      enqueueSnackbar(t('common.copied'), { variant: 'success' });
     } else if (type === 'table') {
       try {
         // Generate main table HTML for the top-level entity
@@ -369,10 +367,10 @@ function EntityDialog({
         ];
 
         await navigator.clipboard.write(clipboardItems);
-        enqueueSnackbar('Table copied to clipboard!', { variant: 'success' });
+        enqueueSnackbar(t('common.copied'), { variant: 'success' });
       } catch (err) {
         console.error('Failed to copy: ', err);
-        enqueueSnackbar('Failed to copy data to clipboard.', { variant: 'error' });
+        enqueueSnackbar(t('common.copy_failed'), { variant: 'error' });
       }
     } else if (type === 'example') {
       const sampleData = generateSampleObject(data);
@@ -384,7 +382,7 @@ function EntityDialog({
         'text/plain': new Blob([clipBoardData], { type: 'text/plain' }),
       });
       await navigator.clipboard.write([clipboardItem]);
-      enqueueSnackbar('Sample data copied to clipboard!', { variant: 'success' });
+      enqueueSnackbar(t('common.copied'), { variant: 'success' });
     }
   };
 
@@ -392,7 +390,7 @@ function EntityDialog({
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        {mode && t(`common.${mode}ing`)} {selectedNode?.label}
+        {mode && t(`common.${mode}ing`)} {mode !== 'create' ? selectedNode?.label : t('common.entity')}
         {affected && ['edit', 'delete'].includes(mode) && (
           <ChangeWarning items={affected} level={mode === 'edit' ? 'warning' : 'error'} />
         )}

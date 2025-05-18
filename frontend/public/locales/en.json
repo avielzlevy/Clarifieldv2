@@ -39,10 +39,13 @@
         "copy": "Copy",
         "copy_as": "Copy as",
         "copied": "Copied to clipboard",
+        "copying_failed": "Failed to copy",
         "copying": "Copying",
+        "select_all": "Select all",
         "cancel": "Cancel",
         "close": "Close",
         "add": "Add",
+        "added":"Added",
         "field": "Field",
         "name": "Name",
         "error": "Error",
@@ -119,7 +122,7 @@
         "provide_description": " Please provide a brief description of the issue"
     },
     "formats":{
-        "fill_all_fields": "Please fill out the details below to",
+        "fill_all_fields": "Please fill out the details below",
         "pattern_must":"The pattern must be a valid regular expression enclosed with ^ and $",
         "pattern":"Pattern",
         "open_regex_builder":"Open Regex Builder",

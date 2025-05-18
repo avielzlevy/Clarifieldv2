@@ -10,12 +10,12 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
-import ChangeWarning from "../components/ChangeWarning";
+import ChangeWarning from "../ChangeWarning";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../contexts/AuthContext";
-import { useSearch } from "../contexts/SearchContext";
-import { useAffectedItems } from "../contexts/useAffectedItems";
-import { useFormats } from "../contexts/useFormats";
+import { useAuth } from "../../contexts/AuthContext";
+import { useSearch } from "../../contexts/SearchContext";
+import { useAffectedItems } from "../../contexts/useAffectedItems";
+import { useFormats } from "../../contexts/useFormats";
 import RegexBuilderDialog from "./RegexBuilderDialog";
 
 const FormatDialog = ({
@@ -120,7 +120,7 @@ const FormatDialog = ({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
-        {mode === "add" ? "Add Format" : "Edit Format"}
+        {t(`common.${mode}`) + " " + t("common.format")}
         {affected && mode !== 'add' && <ChangeWarning items={affected} level="warning" />}
       </DialogTitle>
       <DialogContent>
@@ -129,7 +129,7 @@ const FormatDialog = ({
           fontSize: "1rem",
         }}>
           {
-            `${t("formats.fill_all_fields")} ${t(`common.${mode}`)} ${t("common.format")} ${'\n'} ${t("formats.pattern_must")}`
+            `${t("formats.fill_all_fields")} ${'\n'} ${t("formats.pattern_must")}`
           }
         </DialogContentText>
         <TextField

@@ -19,8 +19,8 @@ import { enUS, he, de, ar, fr, es } from "date-fns/locale";
 import { Boxes, FileJson, Book } from "lucide-react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
-import Loading from "./Loading";
-import NoData from "./noData";
+import Loading from "../Loading";
+import NoData from "../noData";
 
 const ChangeLog = ({ activeFilters }) => {
   const [changeData, setChangeData] = useState({ formats: [], definitions: [], entities: [] });

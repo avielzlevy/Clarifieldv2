@@ -7,10 +7,12 @@ import {
   Typography,
 } from "@mui/material";
 import { Boxes } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function CopyEntityForm({ node, onCheckChange }) {
   const fields = node?.fields || [];
   const [checked, setChecked] = useState([]);
+  const { t } = useTranslation();
 
   // Quick lookup for which labels are checked
   const checkedMap = useMemo(
@@ -50,7 +52,7 @@ function CopyEntityForm({ node, onCheckChange }) {
   );
 
   return (
-    <Box dir="ltr">
+    <Box>
       {/* Select All Section */}
       <Box sx={{ mb: 1, px: 1, display: "flex", alignItems: "center" }}>
         <FormControlLabel
@@ -63,7 +65,7 @@ function CopyEntityForm({ node, onCheckChange }) {
           }
           label={
             <Typography variant="subtitle2" fontWeight="bold">
-              Select All
+              {t("common.select_all")} ({fields.length})
             </Typography>
           }
         />

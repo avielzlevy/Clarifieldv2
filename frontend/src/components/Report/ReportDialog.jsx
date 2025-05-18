@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
-import { useRtl } from "../contexts/RtlContext";
+import { useRtl } from "../../contexts/RtlContext";
 
 const ReportDialog = ({ open, onClose, reportedItem }) => {
   const { rtl } = useRtl();

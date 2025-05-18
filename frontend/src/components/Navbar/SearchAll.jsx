@@ -9,9 +9,9 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
-import { useSearch } from '../contexts/SearchContext';
+import { useSearch } from '../../contexts/SearchContext';
 import { useTranslation } from 'react-i18next';
-import { useRtl } from '../contexts/RtlContext';
+import { useRtl } from '../../contexts/RtlContext';
 
 export default function SearchAll({ setPage }) {
   const theme = useTheme();

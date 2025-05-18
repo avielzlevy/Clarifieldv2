@@ -22,11 +22,11 @@ import {
   Chip,
 } from '@mui/material';
 import { Boxes } from 'lucide-react';
-import Loading from './Loading';
+import Loading from '../Loading';
 
 // Adjust these imports to your hook paths
-import { useDefinitions } from '../contexts/useDefinitions';
-import { useFormats } from '../contexts/useFormats';
+import { useDefinitions } from '../../contexts/useDefinitions';
+import { useFormats } from '../../contexts/useFormats';
 
 const BASE_API_URL = process.env.REACT_APP_API_URL;
 

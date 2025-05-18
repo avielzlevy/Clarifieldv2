@@ -6,7 +6,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { RtlProvider, useRtl } from './contexts/RtlContext';
 import darkTheme from './themes/darkTheme';
 import lightTheme from './themes/lightTheme';
-import NavBar from './components/NavBar';
+import NavBar from './components/Navbar/NavBar';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import { prefixer } from 'stylis';

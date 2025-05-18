@@ -1,8 +1,8 @@
 import React, { useReducer, useCallback, useMemo } from "react";
 import { Box, Paper } from "@mui/material";
-import Reports from "../components/Reports";
-import ChangeLog from "../components/ChangeLog";
-import FilterToolbar from "../components/FilterToolbar";
+import Reports from "../components/Report/Reports";
+import ChangeLog from "../components/Homepage/ChangeLog";
+import FilterToolbar from "../components/Homepage/FilterToolbar";
 
 const filterReducer = (state, action) => ({
   ...state,

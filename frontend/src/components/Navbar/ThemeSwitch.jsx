@@ -4,8 +4,8 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import darkTheme from '../themes/darkTheme';
-import lightTheme from '../themes/lightTheme';
+import darkTheme from '../../themes/darkTheme';
+import lightTheme from '../../themes/lightTheme';
 
 const FADE_DURATION = 1000; // Duration for fade out/in transitions in ms
 const FADE_DELAY = 200; // Delay before applying the theme change in ms

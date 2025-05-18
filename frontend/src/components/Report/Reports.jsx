@@ -16,8 +16,8 @@ import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import { debounce } from "lodash";
-import Loading from "./Loading";
-import NoData from "./noData";
+import Loading from "../Loading";
+import NoData from "../noData";
 
 // Helper: returns the icon for each category.
 const getIconForCategory = (category, theme) => {

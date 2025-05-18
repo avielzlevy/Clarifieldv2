@@ -13,9 +13,9 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import { X, AlertCircle, ShieldAlert, Boxes, Book } from "lucide-react";
-import { useDefinitions } from "../contexts/useDefinitions";
-import { useFormats } from "../contexts/useFormats";
-import { useEntities } from "../contexts/useEntities";
+import { useDefinitions } from "../../../contexts/useDefinitions";
+import { useFormats } from "../../../contexts/useFormats";
+import { useEntities } from "../../../contexts/useEntities";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 

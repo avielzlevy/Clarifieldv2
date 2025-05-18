@@ -9,12 +9,12 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { getAnalytics } from "../utils/analytics";
+import { getAnalytics } from "../../utils/analytics";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Boxes, FileJson, Book } from "lucide-react";
 import { enqueueSnackbar } from "notistack";
-import Loading from "./Loading";
-import NoData from "./noData";
+import Loading from "../Loading";
+import NoData from "../noData";
 
 const QuickAccess = ({ activeFilters }) => {
   const theme = useTheme();
